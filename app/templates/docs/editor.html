@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit: ' ~ doc.title if doc else 'New document' }} — {{ site_name }}{% endblock %}
+{% block body_class %}page-editor{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/docs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container editor-shell fade-in"
+     data-editor
+     data-doc-id="{{ doc.id if doc else '' }}"
+     data-doc-status="{{ doc.status if doc else 'draft' }}">
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('dashboard.documents') }}">My Documents</a></li>
+      <li aria-current="page">{{ doc.title if doc else 'New document' }}</li>
+    </ol>
+  </nav>
+
+  <div class="editor-topbar">
+    <label class="sr-only" for="editor-title">Document title</label>
+    <input class="input editor-title-input" id="editor-title" type="text"
+           maxlength="200" placeholder="Give your document a compelling title…"
+           value="{{ doc.title if doc else '' }}" data-title required>
+
+    {% if doc %}
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('docs.view', slug=doc.slug) }}" target="_blank" rel="noopener"
+       data-view-link>View ↗</a>
+    {% endif %}
+    <span class="editor-autosave" data-autosave-state aria-live="polite">
+      {{ 'Saved' if doc else 'Not created yet' }}
+    </span>
+  </div>
+
+  <div class="editor-meta">
+    <div class="field">
+      <label class="field__label" for="editor-summary">Summary</label>
+      <input class="input" id="editor-summary" type="text" maxlength="400"
+             placeholder="A one-line description shown in feeds…"
+             value="{{ doc.summary if doc else '' }}" data-summary>
+      <p class="field__hint">Optional — we'll excerpt the first sentence if empty.</p>
+    </div>
+    <div class="field">
+      <label class="field__label" for="editor-tags">Tags</label>
+      <input class="input" id="editor-tags" type="text"
+             placeholder="python, ai, web dev (max 8)"
+             value="{{ doc.tags | map(attribute='name') | join(', ') if doc else '' }}"
+             data-tags>
+      <p class="field__hint">Comma separated. Tags power feeds and search.</p>
+    </div>
+    <div class="field">
+      <label class="field__label" for="editor-slug">Slug</label>
+      <input class="input" id="editor-slug" type="text" placeholder="auto-generated-from-title"
+             value="{{ doc.slug if doc else '' }}" data-slug>
+      <p class="field__hint">Leave empty to regenerate from the title.</p>
+    </div>
+    <div class="field">
+      <label class="field__label" for="editor-visibility">Visibility</label>
+      <select class="input" id="editor-visibility" data-visibility>
+        <option value="public" {{ 'selected' if doc and doc.visibility == 'public' or not doc }}>Public — listed in feeds</option>
+        <option value="unlisted" {{ 'selected' if doc and doc.visibility == 'unlisted' }}>Unlisted — link only</option>
+      </select>
+      <p class="field__hint">Drafts are always private until published.</p>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="editor-cover">Cover image (optional)</label>
+    <div class="row">
+      <input class="input" id="editor-cover" type="file" accept="image/png,image/jpeg,image/gif,image/webp"
+             data-cover {% if not doc %}disabled{% endif %}>
+      <span class="text-xs text-muted">PNG/JPG/GIF/WebP, max 4&nbsp;MB</span>
+      {% if doc and doc.cover_image %}
+      <img class="avatar" style="border-radius: 8px;" src="{{ url_for('static', filename=doc.cover_image) }}"
+           alt="Current cover" width="48" height="48">
+      {% endif %}
+    </div>
+    <p class="field__hint" data-cover-hint>{% if not doc %}Available after the first save.{% endif %}</p>
+  </div>
+
+  <div class="editor-toolbar" role="toolbar" aria-label="Markdown formatting" data-toolbar>
+    <button type="button" data-md="h2" title="Heading">H2</button>
+    <button type="button" data-md="h3" title="Subheading">H3</button>
+    <span class="toolbar-sep" aria-hidden="true"></span>
+    <button type="button" data-md="bold" title="Bold"><strong>B</strong></button>
+    <button type="button" data-md="italic" title="Italic"><em>I</em></button>
+    <button type="button" data-md="strike" title="Strikethrough"><s>S</s></button>
+    <span class="toolbar-sep" aria-hidden="true"></span>
+    <button type="button" data-md="code" title="Inline code">&lt;/&gt;</button>
+    <button type="button" data-md="codeblock" title="Code block">{ }</button>
+    <button type="button" data-md="link" title="Link">🔗</button>
+    <button type="button" data-md="image" title="Image">🖼</button>
+    <span class="toolbar-sep" aria-hidden="true"></span>
+    <button type="button" data-md="ul" title="Bullet list">• List</button>
+    <button type="button" data-md="ol" title="Numbered list">1. List</button>
+    <button type="button" data-md="task" title="Task list">☑ Task</button>
+    <button type="button" data-md="quote" title="Blockquote">❝ Quote</button>
+    <button type="button" data-md="table" title="Table">▦ Table</button>
+    <button type="button" data-md="hr" title="Divider">— Divider</button>
+  </div>
+
+  <div class="editor-split">
+    <div class="editor-pane">
+      <div class="editor-pane__label">Markdown</div>
+      <label class="sr-only" for="editor-body">Document body (Markdown)</label>
+      <textarea class="editor-textarea" id="editor-body" data-body spellcheck="true"
+                placeholder="# Start writing…&#10;&#10;Use **bold**, `code`, lists, tables and fenced code blocks.">{{ doc.content_md if doc else '' }}</textarea>
+    </div>
+    <div class="editor-pane">
+      <div class="editor-pane__label">Live preview</div>
+      <div class="editor-preview md-content" data-preview aria-live="polite">
+        <p class="text-muted">Your preview appears here as you type.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-errors" data-errors hidden role="alert"></div>
+
+  <div class="editor-bottombar">
+    <span class="text-xs text-muted" data-counts>0 words · 1 min read</span>
+    <span class="spacer"></span>
+    <button class="btn btn-ghost" type="button" data-action="draft">Save draft</button>
+    <button class="btn btn-primary" type="button" data-action="publish">
+      {{ 'Publish changes' if doc and doc.status == 'published' else 'Publish' }}
+    </button>
+    {% if doc %}
+    <button class="btn btn-danger" type="button" data-action="delete">Delete</button>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/markdown.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/pages/editor.js') }}" defer></script>
+{% endblock %}
+

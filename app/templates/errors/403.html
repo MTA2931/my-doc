@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Access denied — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/errors.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="error-wrap container fade-in">
+  <div class="error-code" aria-hidden="true">403</div>
+  <h1>Access denied</h1>
+  <p>You don't have permission to view this page. Your account role doesn't include this area.</p>
+  <div class="error-actions">
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Back to home</a>
+    {% if current_user.is_authenticated %}
+    <a class="btn btn-secondary" href="{{ url_for('dashboard.index') }}">Go to dashboard</a>
+    {% else %}
+    <a class="btn btn-secondary" href="{{ url_for('auth.login') }}">Log in</a>
+    {% endif %}
+  </div>
+  <p class="error-footnote">MyDoc | Developed by MTA Company</p>
+</div>
+{% endblock %}

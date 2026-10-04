@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Ticket #{{ ticket.id }} — Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'tickets' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+        <li><a href="{{ url_for('admin.tickets_list') }}">Tickets</a></li>
+        <li aria-current="page">#{{ ticket.id }}</li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">#{{ ticket.id }} — {{ ticket.subject }}</h1>
+        <p class="page-head__subtitle row" style="gap: var(--space-2);">
+          {{ ui.status_badge(ticket.status) }}
+          <span class="badge badge--info">{{ ticket.category_label }}</span>
+          <span>by @{{ ticket.user.username }} · {{ ticket.created_at|time_ago }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="admin-ticket-grid">
+      <section class="card" aria-label="Conversation">
+        <div class="thread" data-ticket-root data-ticket-id="{{ ticket.id }}">
+          {% for msg in messages %}
+          <article class="thread-msg {% if msg.is_staff %}thread-msg--staff{% endif %}">
+            <header class="thread-msg__head">
+              {{ ui.avatar(msg.user, 30) }}
+              <strong>{{ msg.user.effective_name if msg.user else 'Unknown' }}</strong>
+              {% if msg.is_staff %}<span class="badge badge--primary">Staff</span>{% endif %}
+              <span class="text-xs text-muted">{{ msg.created_at|time_ago }}</span>
+            </header>
+            <p class="thread-msg__body">{{ msg.body }}</p>
+          </article>
+          {% endfor %}
+
+          <form class="thread-reply" method="post" data-reply-form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="field">
+              <label class="field__label" for="reply-body">Staff reply</label>
+              <textarea class="input textarea" id="reply-body" name="body" rows="4" maxlength="5000"
+                        placeholder="Reply to the user…" data-reply-input required></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit" data-reply-send>Send reply</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="ticket-actions-title">
+        <div class="card__header"><h2 class="card__title" id="ticket-actions-title">Ticket settings</h2></div>
+
+        <form method="post" action="{{ url_for('admin.ticket_action', ticket_id=ticket.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="action" value="status">
+          <div class="field">
+            <label class="field__label" for="status-select">Status</label>
+            <select class="input" id="status-select" name="status">
+              {% for s in statuses %}
+              <option value="{{ s }}" {{ 'selected' if ticket.status == s }}>{{ status_labels[s] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" type="submit">Update status</button>
+        </form>
+
+        <form method="post" action="{{ url_for('admin.ticket_action', ticket_id=ticket.id) }}"
+              style="margin-top: var(--space-4);">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="action" value="priority">
+          <div class="field">
+            <label class="field__label" for="priority-select">Priority</label>
+            <select class="input" id="priority-select" name="priority">
+              {% for p in priorities %}
+              <option value="{{ p }}" {{ 'selected' if ticket.priority == p }}>{{ priority_labels[p] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" type="submit">Update priority</button>
+        </form>
+
+        <form method="post" action="{{ url_for('admin.ticket_action', ticket_id=ticket.id) }}"
+              style="margin-top: var(--space-4);">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="action" value="assign">
+          <div class="field">
+            <label class="field__label" for="assignee-select">Assign to</label>
+            <select class="input" id="assignee-select" name="assignee_id">
+              <option value="">— Unassigned —</option>
+              {% for s in staff %}
+              <option value="{{ s.id }}" {{ 'selected' if ticket.assignee_id == s.id }}>
+                @{{ s.username }} ({{ s.role_label }})
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" type="submit">Save assignment</button>
+        </form>
+
+        <div class="profile-facts" style="margin-top: var(--space-5);">
+          <p class="text-sm"><strong>Requester:</strong> @{{ ticket.user.username }} ({{ ticket.user.email }})</p>
+          <p class="text-sm"><strong>Created:</strong> {{ ticket.created_at|strftime }} {{ ticket.created_at|time_ago }}</p>
+          <p class="text-sm"><strong>Assignee:</strong> {{ '@' ~ ticket.assignee.username if ticket.assignee else 'Unassigned' }}</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}" defer></script>
+{% endblock %}

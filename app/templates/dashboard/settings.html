@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Settings — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'settings' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Settings</h1>
+        <p class="page-head__subtitle">Profile, interests, theme and account management.</p>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+      <section class="card" aria-labelledby="profile-title">
+        <div class="card__header">
+          <h2 class="card__title" id="profile-title">Profile</h2>
+        </div>
+
+        {% if profile_form.errors %}
+        <div class="form-error-summary" role="alert">
+          {% for field, errors in profile_form.errors.items() %}
+            {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {{ profile_form.hidden_tag() }}
+
+          <div class="field">
+            <label class="field__label" for="{{ profile_form.display_name.id }}">Display name</label>
+            {{ profile_form.display_name(class_='input', maxlength=80, required=true) }}
+            {% for error in profile_form.display_name.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="{{ profile_form.bio.id }}">Bio</label>
+            {{ profile_form.bio(class_='input textarea', rows=3, maxlength=500, placeholder='A sentence or two about you…') }}
+            {% for error in profile_form.bio.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="{{ profile_form.avatar.id }}">Avatar image</label>
+            {{ profile_form.avatar(class_='input', accept='image/png,image/jpeg,image/gif,image/webp') }}
+            <p class="field__hint">PNG, JPG, GIF or WebP up to 4&nbsp;MB.</p>
+            {% for error in profile_form.avatar.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="{{ profile_form.theme.id }}">Theme</label>
+            {{ profile_form.theme(class_='input') }}
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="{{ profile_form.interests.id }}">Interests</label>
+            <div class="chip-cloud" data-chip-cloud>
+              {% for tag in all_tags %}
+              <button type="button" class="chip" data-chip value="{{ tag.name }}">{{ tag.name }}</button>
+              {% endfor %}
+            </div>
+            <p class="chip-count"><span data-chip-count>0</span> selected</p>
+            {{ profile_form.interests(class_='input', data_chip_target='true', readonly=true,
+                                      value=current_user.interests | map(attribute='name') | join(', ')) }}
+            {% for error in profile_form.interests.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+
+          {{ profile_form.submit(class_='btn btn-primary') }}
+        </form>
+      </section>
+
+      <section class="card card--danger" aria-labelledby="danger-title">
+        <div class="card__header">
+          <h2 class="card__title" id="danger-title">Danger zone</h2>
+        </div>
+        <p class="text-sm text-secondary">
+          Deleting your account permanently removes your profile, documents,
+          saves and tickets. This cannot be undone.
+        </p>
+        <a class="btn btn-secondary" href="{{ url_for('dashboard.change_password') }}">Change password instead</a>
+
+        <form method="post" action="{{ url_for('dashboard.delete_account') }}"
+              class="danger-form" data-confirm="This will permanently delete your account and ALL of your documents. Type-safe? There is no undo.">
+          {{ delete_form.hidden_tag() }}
+          <div class="field">
+            <label class="field__label" for="{{ delete_form.password.id }}">Confirm with your password</label>
+            {{ delete_form.password(class_='input', autocomplete='current-password', required=true) }}
+            {% for error in delete_form.password.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+          <label class="checkbox-row" for="{{ delete_form.confirm.id }}">
+            {{ delete_form.confirm() }}
+            <span>I understand this permanently deletes my account and documents.</span>
+          </label>
+          {% for error in delete_form.confirm.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          {{ delete_form.submit(class_='btn btn-danger', style='margin-top: var(--space-3);') }}
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/auth.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/errors.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="error-wrap container fade-in">
+  <div class="error-code" aria-hidden="true">404</div>
+  <h1>Page not found</h1>
+  <p>The page you're looking for doesn't exist, was moved, or the link is broken.</p>
+  <div class="error-actions">
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Back to home</a>
+    <a class="btn btn-secondary" href="{{ url_for('main.home') }}">Browse documents</a>
+  </div>
+  <p class="error-footnote">MyDoc | Developed by MTA Company</p>
+</div>
+{% endblock %}

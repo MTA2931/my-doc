@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Open a ticket — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'tickets' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ url_for('dashboard.tickets') }}">Support</a></li>
+        <li aria-current="page">New ticket</li>
+      </ol>
+    </nav>
+
+    <div class="card" style="max-width: 640px;">
+      <div class="card__header">
+        <h1 class="card__title">Open a support ticket</h1>
+      </div>
+
+      {% if form.errors %}
+      <div class="form-error-summary" role="alert">
+        {% for field, errors in form.errors.items() %}
+          {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate data-validate>
+        {{ form.hidden_tag() }}
+
+        <div class="field {% if form.subject.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.subject.id }}">Subject</label>
+          {{ form.subject(class_='input', placeholder='Brief summary of your issue', required=true, maxlength=200) }}
+          {% for error in form.subject.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ form.category.id }}">Category</label>
+          {{ form.category(class_='input') }}
+        </div>
+
+        <div class="field {% if form.message.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.message.id }}">How can we help?</label>
+          {{ form.message(class_='input textarea', rows=6, placeholder='Describe the issue, steps to reproduce, expected behaviour…', required=true) }}
+          {% for error in form.message.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="row">
+          {{ form.submit(class_='btn btn-primary') }}
+          <a class="btn btn-ghost" href="{{ url_for('dashboard.tickets') }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

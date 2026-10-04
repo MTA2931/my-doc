@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MyDoc logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="4" width="48" height="56" rx="8" fill="url(#g)"/>
+  <path d="M40 4 v12 a4 4 0 0 0 4 4 h12" fill="#ffffff" opacity="0.35"/>
+  <path d="M40 4 l12 12 h-8 a4 4 0 0 1 -4 -4z" fill="#ffffff" opacity="0.6"/>
+  <path d="M18 26 h28 M18 34 h28 M18 42 h18" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Auth pages — centered cards, wizard steps, interests chips.
+   ========================================================================== */
+
+.page-auth {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.auth-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding-block: var(--space-7);
+}
+
+.auth-card { width: min(460px, 100%); }
+
+.auth-card__head { margin-bottom: var(--space-2); }
+
+.auth-row { margin-bottom: var(--space-4); }
+
+.auth-alt {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.auth-footnote {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* --------------------------- Signup wizard ------------------------------- */
+.wizard-steps {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+.wizard-steps li {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.wizard-steps li::before {
+  content: "";
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--bg-inset);
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+.wizard-steps li.is-active { color: var(--primary); font-weight: var(--weight-semibold); }
+.wizard-steps li.is-active::before { background: var(--primary); }
+.wizard-steps li.is-done::before { background: var(--success); }
+
+.wizard-panel[hidden] { display: none; }
+.wizard-panel { animation: fadeIn var(--duration-base) var(--ease-out) both; }
+
+.wizard-nav {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+.wizard-nav .btn { flex: 1; }
+
+/* --------------------------- Interest chips ------------------------------ */
+.chip-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  max-height: 260px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  padding: 0.3rem 0.85rem;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+.chip.is-selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+.chip.is-selected::before { content: "✓ "; }
+
+.chip-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .auth-card { padding: var(--space-4); }
+  .wizard-nav { flex-direction: column; }
+}

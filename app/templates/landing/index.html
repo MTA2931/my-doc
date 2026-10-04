@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}{{ site_name }} — Where knowledge gets documented{% endblock %}
+{% block body_class %}page-landing{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- ============================== HERO ============================== -->
+<section class="hero" id="hero" aria-labelledby="hero-title">
+  <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--2" aria-hidden="true"></div>
+
+  <div class="container hero__grid">
+    <div class="hero__copy" data-parallax="0.4">
+      <span class="hero__eyebrow">Open source · Built for makers</span>
+      <h1 id="hero-title" class="hero__title">
+        Write it down.<br>
+        <span class="hero__accent">Share it</span> with the world.
+      </h1>
+      <p class="hero__subtitle">
+        {{ site_name }} is a public platform for documents about programming,
+        software development, computers, artificial intelligence and the
+        digital world. Create an account, pick your interests and start
+        reading — or writing — in seconds.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn-primary btn-lg" href="{{ url_for('auth.signup') }}">Sign Up for Free</a>
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('auth.login') }}">Log In</a>
+      </div>
+      <dl class="hero__stats" aria-label="Platform highlights">
+        <div><dt>Topics</dt><dd>50+</dd></div>
+        <div><dt>Formats</dt><dd>Guides · Notes · Tutorials</dd></div>
+        <div><dt>License</dt><dd>MIT</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero__stage" data-parallax="1.1" aria-hidden="true">
+      <div class="stage-scene">
+        <!-- Rotating 3D "document" cube -->
+        <div class="cube">
+          <div class="cube__face cube__face--front"><span>H1</span></div>
+          <div class="cube__face cube__face--back"><span>{ }</span></div>
+          <div class="cube__face cube__face--right"><span>py</span></div>
+          <div class="cube__face cube__face--left"><span>ai</span></div>
+          <div class="cube__face cube__face--top"><span>md</span></div>
+          <div class="cube__face cube__face--bottom"><span>git</span></div>
+        </div>
+
+        <!-- Floating 3D document cards -->
+        <article class="doc3d doc3d--1">
+          <header class="doc3d__bar"><i></i><i></i><i></i></header>
+          <div class="doc3d__lines"><b></b><b></b><b></b><b class="short"></b></div>
+          <footer class="doc3d__tag">Python</footer>
+        </article>
+        <article class="doc3d doc3d--2">
+          <header class="doc3d__bar"><i></i><i></i><i></i></header>
+          <div class="doc3d__lines"><b></b><b></b><b class="short"></b></div>
+          <footer class="doc3d__tag">Neural nets</footer>
+        </article>
+        <article class="doc3d doc3d--3">
+          <header class="doc3d__bar"><i></i><i></i><i></i></header>
+          <div class="doc3d__lines"><b></b><b></b><b></b><b class="short"></b></div>
+          <footer class="doc3d__tag">DevOps</footer>
+        </article>
+
+        <div class="orbit-ring" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#what-is-mydoc" aria-label="Scroll to content">
+    <span></span>
+  </a>
+</section>
+
+<!-- ========================== WHAT IS MYDOC ========================== -->
+<section class="section" id="what-is-mydoc" aria-labelledby="what-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">What is {{ site_name }}?</span>
+      <h2 id="what-title">A home for technical knowledge</h2>
+      <p>
+        {{ site_name }} (short for <em>MyDocument</em>) lets anyone create an
+        account and publish documents — articles, guides, notes and tutorials.
+        Readers browse everything publicly; writers keep full control of their
+        drafts with a Markdown editor, live preview and instant publishing.
+      </p>
+    </div>
+
+    <div class="grid grid--cards">
+      <div class="card card--hover reveal">
+        <div class="feature-icon" aria-hidden="true">📝</div>
+        <h3>Write beautifully</h3>
+        <p class="text-secondary">A split-pane Markdown editor with toolbar, live preview, syntax-highlighted code blocks and autosaving drafts.</p>
+      </div>
+      <div class="card card--hover reveal">
+        <div class="feature-icon" aria-hidden="true">🔍</div>
+        <h3>Discover instantly</h3>
+        <p class="text-secondary">Your feed learns from your interests and surfaces the latest published documents, with fast debounced search.</p>
+      </div>
+      <div class="card card--hover reveal">
+        <div class="feature-icon" aria-hidden="true">🛡️</div>
+        <h3>Safe by design</h3>
+        <p class="text-secondary">Every document is sanitized server-side, CSRF-protected and moderated with a transparent report pipeline.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== KEY FEATURES =========================== -->
+<section class="section section--alt" id="features" aria-labelledby="features-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Key features</span>
+      <h2 id="features-title">Everything you need, nothing you don't</h2>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">⚡</span>
+        <div><h3>Markdown editor</h3><p>Toolbar, split preview, tables, task lists and autosave.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">🎨</span>
+        <div><h3>Dark &amp; light themes</h3><p>Animated sun/moon toggle, OS-aware, saved to your profile.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">🔖</span>
+        <div><h3>Saves &amp; bookmarks</h3><p>Keep a personal library of the documents you love.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">📡</span>
+        <div><h3>Personalised feed</h3><p>For You, Latest and Popular tabs with infinite loading.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">🎫</span>
+        <div><h3>Support tickets</h3><p>Threaded conversations with the moderation team.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">🔐</span>
+        <div><h3>Role-based admin</h3><p>Super Admin, Admin and Support roles enforced server-side.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">📊</span>
+        <div><h3>Analytics dashboard</h3><p>Views, saves and growth charts drawn on canvas.</p></div></div>
+      <div class="feature-item reveal"><span class="feature-item__icon" aria-hidden="true">🚀</span>
+        <div><h3>Deployment ready</h3><p>Gunicorn + Nginx recipes, SQLite to PostgreSQL via env var.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW IT WORKS =========================== -->
+<section class="section" id="how-it-works" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">How it works</span>
+      <h2 id="how-title">Three steps to your first document</h2>
+    </div>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step__num">1</span>
+        <h3>Create your account</h3>
+        <p>Sign up for free with a username, e-mail and a strong password, then pick the topics you care about.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num">2</span>
+        <h3>Write in Markdown</h3>
+        <p>Open the split-view editor, add headings, code and images, watch the live preview, and autosave as you type.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num">3</span>
+        <h3>Publish &amp; share</h3>
+        <p>Publish instantly to get a clean public URL, then track views, saves and reader feedback from your dashboard.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================== TOPICS ============================== -->
+<section class="section section--alt" id="topics" aria-labelledby="topics-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Topics</span>
+      <h2 id="topics-title">Built for the digital world</h2>
+      <p>From low-level hardware to frontier AI — {{ site_name }} covers the topics that matter to builders.</p>
+    </div>
+
+    <ul class="topics">
+      <li class="topic reveal"><strong>Programming</strong><span>Python, Go, Rust, JS…</span></li>
+      <li class="topic reveal"><strong>Web Development</strong><span>Frontend, backend, APIs</span></li>
+      <li class="topic reveal"><strong>Artificial Intelligence</strong><span>ML, LLMs, computer vision</span></li>
+      <li class="topic reveal"><strong>Cybersecurity</strong><span>Crypto, networks, defense</span></li>
+      <li class="topic reveal"><strong>Hardware</strong><span>Embedded, IoT, robotics</span></li>
+      <li class="topic reveal"><strong>DevOps</strong><span>Docker, K8s, CI/CD, cloud</span></li>
+      <li class="topic reveal"><strong>Databases</strong><span>SQL, scaling, modeling</span></li>
+      <li class="topic reveal"><strong>Digital literacy</strong><span>Tools, workflows, career</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ OPEN SOURCE =========================== -->
+<section class="section" id="open-source" aria-labelledby="oss-title">
+  <div class="container oss reveal">
+    <div class="oss__copy">
+      <span class="section-eyebrow">Open source</span>
+      <h2 id="oss-title">Read the code. Improve the code.</h2>
+      <p>
+        {{ site_name }} is fully open source under the MIT license — Flask,
+        SQLAlchemy and vanilla HTML/CSS/JS with zero framework lock-in.
+        Issues, pull requests and fresh ideas are warmly welcomed.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn-primary" href="https://github.com/mta-company/my-doc" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        <a class="btn btn-outline" href="https://github.com/mta-company/my-doc/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing guide</a>
+      </div>
+    </div>
+    <pre class="oss__code" aria-hidden="true"><code class="language-bash">git clone https://github.com/mta-company/my-doc.git
+cd my-doc
+python -m venv .venv
+pip install -r requirements.txt
+flask --app run.py db upgrade
+flask --app run.py create-superadmin
+flask --app run.py run</code></pre>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA ============================= -->
+<section class="cta-band" aria-labelledby="cta-title">
+  <div class="container cta-band__inner reveal">
+    <h2 id="cta-title">Ready to publish your first document?</h2>
+    <p>Join {{ site_name }} — it takes less than a minute and always will be free.</p>
+    <div class="hero__actions hero__actions--center">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('auth.signup') }}">Sign Up for Free</a>
+      <a class="btn btn-ghost btn-lg cta-band__ghost" href="{{ url_for('auth.login') }}">Log In</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/landing.js') }}" defer></script>
+{% endblock %}
+
+

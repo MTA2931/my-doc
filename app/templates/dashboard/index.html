@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'dashboard' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Welcome back, {{ current_user.effective_name }} 👋</h1>
+        <p class="page-head__subtitle">Here's how your documents are doing.</p>
+      </div>
+      <a class="btn btn-primary" href="{{ url_for('docs.create') }}">+ New Document</a>
+    </div>
+
+    <div class="stat-grid" aria-label="Your statistics">
+      <div class="stat-card">
+        <span class="stat-card__label">Documents</span>
+        <span class="stat-card__value" data-count="{{ stats.total_docs }}">0</span>
+        <span class="stat-card__hint">{{ stats.published }} published</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Total views</span>
+        <span class="stat-card__value" data-count="{{ stats.views }}">0</span>
+        <span class="stat-card__hint">across all documents</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Saves received</span>
+        <span class="stat-card__value" data-count="{{ stats.saves }}">0</span>
+        <span class="stat-card__hint">readers bookmarked you</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Open tickets</span>
+        <span class="stat-card__value" data-count="{{ stats.open_tickets }}">0</span>
+        <span class="stat-card__hint">awaiting reply</span>
+      </div>
+    </div>
+
+    <div class="dash-columns">
+      <section class="card" aria-labelledby="recent-title">
+        <div class="card__header">
+          <h2 class="card__title" id="recent-title">Recent documents</h2>
+          <a class="text-sm" href="{{ url_for('dashboard.documents') }}">View all →</a>
+        </div>
+        {% if recent_docs %}
+        <ul class="recent-list">
+          {% for d in recent_docs %}
+          <li class="recent-item">
+            <div>
+              <a class="recent-item__title" href="{{ url_for('docs.view', slug=d.slug) }}">{{ d.title }}</a>
+              <p class="text-xs text-muted">Updated {{ d.updated_at|time_ago }} · {{ d.views_count|numfmt }} views</p>
+            </div>
+            <div class="row">
+              {% if d.status == 'published' %}
+              <span class="badge badge--success">Published</span>
+              {% else %}
+              <span class="badge badge--neutral">Draft</span>
+              {% endif %}
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('docs.edit', doc_id=d.id) }}">Edit</a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state" style="border: 0; padding: var(--space-6);">
+          <h3>No documents yet</h3>
+          <p>Write your first document and it will show up here.</p>
+          <a class="btn btn-primary" href="{{ url_for('docs.create') }}">Start writing</a>
+        </div>
+        {% endif %}
+      </section>
+
+      <section class="card" aria-labelledby="activity-title">
+        <div class="card__header">
+          <h2 class="card__title" id="activity-title">Recent activity</h2>
+        </div>
+        {% if activities %}
+        <ul class="activity-list">
+          {% for a in activities %}
+          <li class="activity-item">
+            <span class="activity-item__dot" aria-hidden="true"></span>
+            <div>
+              {% if a.link %}<a href="{{ a.link }}">{{ a.message }}</a>
+              {% else %}<span>{{ a.message }}</span>{% endif %}
+              <p class="text-xs text-muted">{{ a.created_at|time_ago }}</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted text-sm">No activity yet — it will appear as you write and publish.</p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

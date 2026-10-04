@@ -1,0 +1,1 @@
+"""MyDoc test suite (pytest)."""

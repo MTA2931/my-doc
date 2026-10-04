@@ -1,0 +1,103 @@
+{# Reusable UI macros for MyDoc templates. #}
+
+{% macro avatar(user, size=32) %}
+{% if user.avatar %}
+<img class="avatar" src="{{ url_for('static', filename=user.avatar) }}" alt="{{ user.effective_name }}" width="{{ size }}" height="{{ size }}">
+{% else %}
+<span class="avatar avatar--initials" style="--avatar-size: {{ size }}px" aria-hidden="true">{{ user.effective_name[:1]|upper }}</span>
+{% endif %}
+{% endmacro %}
+
+{% macro badge(text, variant='neutral') %}
+<span class="badge badge--{{ variant }}">{{ text }}</span>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+  {% if status == 'published' %}{{ badge('Published', 'success') }}
+  {% elif status == 'draft' %}{{ badge('Draft', 'neutral') }}
+  {% elif status == 'open' %}{{ badge('Open', 'info') }}
+  {% elif status == 'in_progress' %}{{ badge('In Progress', 'warning') }}
+  {% elif status == 'resolved' %}{{ badge('Resolved', 'success') }}
+  {% elif status == 'closed' %}{{ badge('Closed', 'neutral') }}
+  {% elif status == 'pending' %}{{ badge('Pending', 'warning') }}
+  {% elif status == 'reviewing' %}{{ badge('Reviewing', 'info') }}
+  {% elif status == 'dismissed' %}{{ badge('Dismissed', 'neutral') }}
+  {% elif status == 'actioned' %}{{ badge('Actioned', 'danger') }}
+  {% elif status == 'banned' %}{{ badge('Banned', 'danger') }}
+  {% else %}{{ badge(status|capitalize) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro doc_card(doc) %}
+<article class="doc-card reveal" data-doc-id="{{ doc.id }}">
+  <a class="doc-card__cover" href="{{ url_for('docs.view', slug=doc.slug) }}" tabindex="-1" aria-hidden="true">
+    {% if doc.cover_image %}
+    <img src="{{ url_for('static', filename=doc.cover_image) }}" alt="" loading="lazy">
+    {% else %}
+    <div class="doc-card__placeholder" data-initial="{{ doc.title[:1]|upper }}"></div>
+    {% endif %}
+  </a>
+  <div class="doc-card__body">
+    <div class="doc-card__meta">
+      {% for tag in doc.tags[:3] %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+      <span class="doc-card__time">{{ doc.reading_time }} min read</span>
+    </div>
+    <h3 class="doc-card__title">
+      <a href="{{ url_for('docs.view', slug=doc.slug) }}">{{ doc.title }}</a>
+    </h3>
+    <p class="doc-card__summary">{{ doc.summary_or_excerpt }}</p>
+    <div class="doc-card__footer">
+      {{ avatar(doc.author, 26) }}
+      <span class="doc-card__author">{{ doc.author.effective_name }}</span>
+      <span class="doc-card__stats">
+        <span title="Views">{{ doc.views_count|numfmt }} views</span>
+        <span title="Saves">{{ doc.save_count|numfmt }} saves</span>
+      </span>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{% macro pagination(pag, endpoint, qs='') %}
+{% if pag and pag.pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+  {% if pag.has_prev %}
+  <a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=pag.prev_num) }}{% if qs %}&{{ qs }}{% endif %}" rel="prev">&larr; Previous</a>
+  {% else %}
+  <span class="btn btn-ghost btn-sm is-disabled" aria-disabled="true">&larr; Previous</span>
+  {% endif %}
+  <span class="pagination__info">Page {{ pag.page }} of {{ pag.pages }}</span>
+  {% if pag.has_next %}
+  <a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=pag.next_num) }}{% if qs %}&{{ qs }}{% endif %}" rel="next">Next &rarr;</a>
+  {% else %}
+  <span class="btn btn-ghost btn-sm is-disabled" aria-disabled="true">Next &rarr;</span>
+  {% endif %}
+</nav>
+{% endif %}
+{% endmacro %}
+
+{% macro field(form, name, type='text', label=None, placeholder=None, autocomplete=None, extra_class='') %}
+  {% set f = form[name] %}
+  <div class="field {% if f.errors %}field--error{% endif %}">
+    <label for="{{ f.id }}" class="field__label">{{ label or f.label.text }}</label>
+    {% if type == 'textarea' %}
+      {{ f(class='input textarea ' ~ extra_class, placeholder=placeholder or '', rows=5) }}
+    {% else %}
+      {{ f(class='input ' ~ extra_class, placeholder=placeholder or '', autocomplete=autocomplete or '') }}
+    {% endif %}
+    {% for error in f.errors %}
+      <p class="field__error" role="alert">{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro empty_state(title, text, svg, action_label=None, action_url=None) %}
+<div class="empty-state">
+  <div class="empty-state__art" aria-hidden="true">{{ svg|safe }}</div>
+  <h3>{{ title }}</h3>
+  <p>{{ text }}</p>
+  {% if action_label and action_url %}
+  <a class="btn btn-primary" href="{{ action_url }}">{{ action_label }}</a>
+  {% endif %}
+</div>
+{% endmacro %}

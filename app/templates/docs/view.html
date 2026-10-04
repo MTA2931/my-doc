@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}{{ doc.title }} — {{ site_name }}{% endblock %}
+{% block meta_description %}{{ doc.summary_or_excerpt }}{% endblock %}
+{% block body_class %}page-doc{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/docs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container container--narrow doc-page fade-in">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{{ url_for('main.index') }}">Home</a></li>
+      <li><a href="{{ url_for('main.home') }}">Feed</a></li>
+      <li aria-current="page">{{ doc.title|truncate(48) }}</li>
+    </ol>
+  </nav>
+
+  {% if doc.status == 'draft' %}
+  <div class="flash flash--warning" role="status">
+    You are viewing a <strong>draft</strong> — only you and staff can see it.
+  </div>
+  {% elif doc.visibility == 'unlisted' %}
+  <div class="flash flash--info" role="status">
+    This document is <strong>unlisted</strong>: it won't appear in feeds, but anyone with the link can read it.
+  </div>
+  {% endif %}
+
+  <article class="doc-article" data-doc-root data-doc-id="{{ doc.id }}"
+           {% if current_user.is_authenticated %}data-logged-in="1"{% endif %}>
+    <header class="doc-article__header">
+      <div class="doc-article__meta">
+        <div class="row">
+          {% for tag in doc.tags %}
+          <a class="tag" href="{{ url_for('main.home', tab='latest', q=tag.name) }}">{{ tag.name }}</a>
+          {% endfor %}
+        </div>
+        <div class="doc-article__byline row">
+          {{ ui.avatar(doc.author, 34) }}
+          <div>
+            <strong>{{ doc.author.effective_name }}</strong>
+            <span class="text-muted text-sm">
+              {{ doc.published_at or doc.created_at|strftime }}
+              · {{ doc.reading_time }} min read
+              · {{ doc.views_count|numfmt }} views
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-article__actions">
+        <button class="btn btn-secondary btn-sm" type="button"
+                data-save-btn data-doc-id="{{ doc.id }}"
+                aria-pressed="{{ 'true' if is_saved else 'false' }}">
+          <span data-save-icon>{{ '★' if is_saved else '☆' }}</span>
+          <span data-save-label>{{ 'Saved' if is_saved else 'Save' }}</span>
+          <span class="text-muted">(<span data-save-count>{{ doc.save_count }}</span>)</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" type="button" data-report-btn data-doc-id="{{ doc.id }}">
+          ⚑ Report
+        </button>
+
+        {% if is_owner %}
+        <a class="btn btn-outline btn-sm" href="{{ url_for('docs.edit', doc_id=doc.id) }}">Edit</a>
+        <button class="btn btn-secondary btn-sm" type="button"
+                data-status-btn data-doc-id="{{ doc.id }}"
+                data-status="{{ doc.status }}">
+          {{ 'Unpublish' if doc.status == 'published' else 'Publish' }}
+        </button>
+        <button class="btn btn-danger btn-sm" type="button"
+                data-delete-btn data-doc-id="{{ doc.id }}">Delete</button>
+        {% elif current_user.is_admin %}
+        <a class="btn btn-outline btn-sm" href="{{ url_for('docs.edit', doc_id=doc.id) }}">Edit (staff)</a>
+        {% endif %}
+      </div>
+    </header>
+
+    {% if doc.cover_image %}
+    <figure class="doc-article__cover">
+      <img src="{{ url_for('static', filename=doc.cover_image) }}" alt="Cover image for {{ doc.title }}">
+    </figure>
+    {% endif %}
+
+    <h1 class="doc-article__title">{{ doc.title }}</h1>
+    {% if doc.summary %}
+    <p class="doc-article__summary">{{ doc.summary }}</p>
+    {% endif %}
+
+    <div class="md-content">
+      {# content_html is produced server-side by bleach with a strict allowlist #}
+      {{ doc.content_html|safe }}
+    </div>
+
+    <footer class="doc-article__footer">
+      <div class="row row--between">
+        <div class="row">
+          {{ ui.avatar(doc.author, 40) }}
+          <div>
+            <strong>{{ doc.author.effective_name }}</strong>
+            <p class="text-muted text-sm">{{ doc.author.bio or 'MyDoc contributor.' }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn btn-secondary btn-sm" type="button"
+                  data-save-btn data-doc-id="{{ doc.id }}"
+                  aria-pressed="{{ 'true' if is_saved else 'false' }}">
+            <span data-save-icon>{{ '★' if is_saved else '☆' }}</span>
+            <span data-save-label>{{ 'Saved' if is_saved else 'Save' }}</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" type="button" data-report-btn data-doc-id="{{ doc.id }}">Report</button>
+        </div>
+      </div>
+    </footer>
+  </article>
+
+  {% if related %}
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">Related documents</h2>
+    <div class="grid grid--cards">
+      {% for r in related %}{{ ui.doc_card(r) }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/docview.js') }}" defer></script>
+{% endblock %}

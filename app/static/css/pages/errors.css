@@ -1,0 +1,44 @@
+/* ==========================================================================
+   Error pages — big code, centered layout, both themes.
+   ========================================================================== */
+
+.error-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-3);
+  min-height: calc(100vh - var(--header-height) - 220px);
+  padding-block: var(--space-8);
+}
+
+.error-code {
+  font-size: clamp(4.5rem, 14vw, 8rem);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(120deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.9;
+}
+
+.error-wrap h1 { font-size: var(--text-xl); }
+.error-wrap p { color: var(--text-secondary); max-width: 52ch; }
+
+.error-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+
+.error-footnote {
+  margin-top: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}

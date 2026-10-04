@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Support tickets — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'tickets' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Support tickets</h1>
+        <p class="page-head__subtitle">Questions, bugs and feedback — we usually reply within a day.</p>
+      </div>
+      <a class="btn btn-primary" href="{{ url_for('dashboard.ticket_new') }}">+ Open a ticket</a>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Filter tickets">
+      <a class="tab{% if status == 'all' %} is-active{% endif %}" role="tab"
+         aria-selected="{{ 'true' if status == 'all' else 'false' }}"
+         href="{{ url_for('dashboard.tickets', status='all') }}">All</a>
+      {% for s in statuses %}
+      <a class="tab{% if status == s %} is-active{% endif %}" role="tab"
+         aria-selected="{{ 'true' if status == s else 'false' }}"
+         href="{{ url_for('dashboard.tickets', status=s) }}">{{ s|replace('_', ' ')|title }}</a>
+      {% endfor %}
+    </div>
+
+    {% if tickets %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Category</th>
+            <th scope="col">Status</th>
+            <th scope="col">Updated</th>
+            <th scope="col" style="text-align:right;"> </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td>
+              <a class="font-medium" href="{{ url_for('dashboard.ticket_detail', ticket_id=t.id) }}">#{{ t.id }} — {{ t.subject }}</a>
+            </td>
+            <td><span class="badge badge--info">{{ t.category_label }}</span></td>
+            <td>{{ ui.status_badge(t.status) }}</td>
+            <td class="text-muted text-sm">{{ t.updated_at|time_ago }}</td>
+            <td><div class="cell-actions">
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('dashboard.ticket_detail', ticket_id=t.id) }}">Open</a>
+            </div></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state__art" aria-hidden="true">
+        <svg viewBox="0 0 200 140" width="200" height="140">
+          <rect x="30" y="30" width="140" height="80" rx="12" fill="var(--primary-soft)" stroke="var(--primary)" stroke-width="2"/>
+          <path d="M55 110 l0 22 24 -22z" fill="var(--primary-soft)" stroke="var(--primary)" stroke-width="2"/>
+          <line x1="55" y1="55" x2="145" y2="55" stroke="var(--primary)" stroke-width="4" stroke-linecap="round"/>
+          <line x1="55" y1="75" x2="120" y2="75" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+      </div>
+      <h3>No tickets here</h3>
+      <p>Need help? Open a ticket and our team will get back to you.</p>
+      <a class="btn btn-primary" href="{{ url_for('dashboard.ticket_new') }}">Open a ticket</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

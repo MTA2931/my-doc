@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}My Documents — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'documents' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">My Documents</h1>
+        <p class="page-head__subtitle">Search, filter and manage everything you've written.</p>
+      </div>
+      <a class="btn btn-primary" href="{{ url_for('docs.create') }}">+ New Document</a>
+    </div>
+
+    <form class="filter-bar" method="get" role="search">
+      <div class="feed-search" style="position: relative; flex: 1; min-width: 200px;">
+        <label class="sr-only" for="doc-q">Search my documents</label>
+        <input class="input" type="search" id="doc-q" name="q" value="{{ q }}" placeholder="Search by title or summary…">
+      </div>
+      <label class="sr-only" for="doc-status">Filter by status</label>
+      <select class="input" id="doc-status" name="status" style="max-width: 180px;">
+        <option value="all" {{ 'selected' if status == 'all' }}>All statuses</option>
+        <option value="published" {{ 'selected' if status == 'published' }}>Published</option>
+        <option value="draft" {{ 'selected' if status == 'draft' }}>Drafts</option>
+      </select>
+      <button class="btn btn-secondary" type="submit">Filter</button>
+    </form>
+
+    {% if docs %}
+    <div class="table-wrap">
+      <table class="table" data-doc-table>
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Status</th>
+            <th scope="col">Views</th>
+            <th scope="col">Saves</th>
+            <th scope="col">Updated</th>
+            <th scope="col" style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in docs %}
+          <tr data-row-id="{{ d.id }}">
+            <td>
+              <a class="font-medium" href="{{ url_for('docs.view', slug=d.slug) }}">{{ d.title }}</a>
+              <p class="text-xs text-muted">/doc/{{ d.slug }}</p>
+            </td>
+            <td>
+              {% if d.status == 'published' %}<span class="badge badge--success">Published</span>
+              {% else %}<span class="badge badge--neutral">Draft</span>{% endif %}
+              {% if d.visibility == 'unlisted' %}<span class="badge badge--info">Unlisted</span>{% endif %}
+            </td>
+            <td>{{ d.views_count|numfmt }}</td>
+            <td>{{ d.save_count|numfmt }}</td>
+            <td class="text-muted text-sm">{{ d.updated_at|time_ago }}</td>
+            <td>
+              <div class="cell-actions">
+                <a class="btn btn-ghost btn-sm" href="{{ url_for('docs.edit', doc_id=d.id) }}">Edit</a>
+                <button class="btn btn-secondary btn-sm" type="button"
+                        data-status-toggle data-doc-id="{{ d.id }}"
+                        data-next-status="{{ 'draft' if d.status == 'published' else 'published' }}">
+                  {{ 'Unpublish' if d.status == 'published' else 'Publish' }}
+                </button>
+                <button class="btn btn-danger btn-sm" type="button"
+                        data-delete-doc data-doc-id="{{ d.id }}">Delete</button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {{ ui.pagination(pagination, 'dashboard.documents', 'q=' ~ (q|urlencode) ~ '&status=' ~ (status|urlencode)) }}
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state__art" aria-hidden="true">
+        <svg viewBox="0 0 200 140" width="200" height="140">
+          <rect x="35" y="15" width="130" height="110" rx="10" fill="var(--primary-soft)" stroke="var(--primary)" stroke-width="2"/>
+          <line x1="60" y1="45" x2="140" y2="45" stroke="var(--primary)" stroke-width="4" stroke-linecap="round"/>
+          <line x1="60" y1="65" x2="120" y2="65" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+          <line x1="60" y1="85" x2="100" y2="85" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+        </svg>
+      </div>
+      <h3>{% if q or status != 'all' %}No matching documents{% else %}Nothing written yet{% endif %}</h3>
+      <p>{% if q or status != 'all' %}Try different search terms or clear the filter.
+         {% else %}Documents you create will appear here. Start with your first one!{% endif %}</p>
+      <a class="btn btn-primary" href="{{ url_for('docs.create') }}">Write a document</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}" defer></script>
+{% endblock %}

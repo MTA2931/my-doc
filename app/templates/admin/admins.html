@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Admins — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'admins' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Admins &amp; staff</h1>
+        <p class="page-head__subtitle">Super Admin only — create staff accounts and manage roles.</p>
+      </div>
+      <span class="badge badge--danger">Super Admin area</span>
+    </div>
+
+    <div class="admin-user-grid">
+      <section class="card" aria-labelledby="staff-title">
+        <div class="card__header">
+          <h2 class="card__title" id="staff-title">Staff accounts</h2>
+          <span class="text-xs text-muted">{{ staff_users|length }} total</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Role</th>
+                <th scope="col" style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in staff_users %}
+              <tr>
+                <td>
+                  <a class="font-medium" href="{{ url_for('admin.user_detail', user_id=u.id) }}">@{{ u.username }}</a>
+                  <p class="text-xs text-muted">{{ u.email }}</p>
+                </td>
+                <td>
+                  {% if u.role == 'super_admin' %}<span class="badge badge--danger">Super Admin</span>
+                  {% elif u.role == 'admin' %}<span class="badge badge--primary">Admin</span>
+                  {% else %}<span class="badge badge--info">Support</span>{% endif %}
+                </td>
+                <td>
+                  <div class="cell-actions">
+                    {% if u.id != current_user.id %}
+                    <form method="post" action="{{ url_for('admin.admin_action', user_id=u.id) }}"
+                          class="inline-form"
+                          data-confirm="Remove @{{ u.username }} from the staff team?">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <input type="hidden" name="action" value="remove">
+                      <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                    </form>
+                    {% else %}
+                    <span class="text-xs text-muted">you</span>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="staff-role-help" style="margin-top: var(--space-4);">
+          <p class="text-xs text-muted">
+            <strong>Support:</strong> dashboard, documents, tickets, reports ·
+            <strong>Admin:</strong> + users, settings ·
+            <strong>Super Admin:</strong> + admins management.
+          </p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="create-title">
+        <div class="card__header"><h2 class="card__title" id="create-title">Create staff account</h2></div>
+
+        {% if form.errors %}
+        <div class="form-error-summary" role="alert">
+          {% for field, errors in form.errors.items() %}
+            {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          <div class="field {% if form.username.errors %}field--error{% endif %}">
+            <label class="field__label" for="{{ form.username.id }}">Username</label>
+            {{ form.username(class_='input', autocomplete='off', required=true) }}
+            {% for error in form.username.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+          <div class="field {% if form.email.errors %}field--error{% endif %}">
+            <label class="field__label" for="{{ form.email.id }}">E-mail</label>
+            {{ form.email(class_='input', type='email', required=true) }}
+            {% for error in form.email.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+          <div class="field {% if form.password.errors %}field--error{% endif %}">
+            <label class="field__label" for="{{ form.password.id }}">Temporary password</label>
+            {{ form.password(class_='input', autocomplete='new-password', required=true) }}
+            <p class="field__hint">8+ chars with upper/lower case, a number and a symbol. Share it securely.</p>
+            {% for error in form.password.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+          </div>
+          <div class="field">
+            <label class="field__label" for="{{ form.role.id }}">Role</label>
+            {{ form.role(class_='input') }}
+          </div>
+          {{ form.submit(class_='btn btn-primary') }}
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

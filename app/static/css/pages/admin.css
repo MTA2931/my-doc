@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Admin panel — charts, audit list, report cards, user grids.
+   ========================================================================== */
+
+.admin-charts {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.admin-user-grid,
+.admin-ticket-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .admin-charts,
+  .admin-user-grid,
+  .admin-ticket-grid { grid-template-columns: 1fr; }
+}
+
+.chart-legend { display: flex; align-items: center; gap: var(--space-2); color: var(--text-muted); }
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.legend-dot--users { background: var(--primary); }
+.legend-dot--docs { background: var(--accent); }
+
+#growth-chart { width: 100%; height: auto; }
+
+.audit-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.audit-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  font-size: var(--text-sm);
+}
+.audit-item .badge { flex-shrink: 0; min-width: 118px; justify-content: center; }
+
+.inline-form { display: inline; }
+
+/* Report cards */
+.report-list { display: flex; flex-direction: column; gap: var(--space-4); }
+.report-card--pending { border-left: 4px solid var(--warning); }
+.report-details {
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--border-strong);
+  padding: var(--space-2) var(--space-4);
+  margin: var(--space-3) 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+
+.profile-facts { display: flex; flex-direction: column; gap: var(--space-1); }

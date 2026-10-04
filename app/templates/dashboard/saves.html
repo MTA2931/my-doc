@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Saves — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set active = 'saves' %}
+  {% include 'dashboard/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Saves</h1>
+        <p class="page-head__subtitle">Documents you bookmarked for later.</p>
+      </div>
+    </div>
+
+    {% if entries %}
+    <div class="grid grid--cards">
+      {% for doc, saved_at in entries %}
+      <article class="doc-card">
+        <a class="doc-card__cover" href="{{ url_for('docs.view', slug=doc.slug) }}" tabindex="-1" aria-hidden="true">
+          {% if doc.cover_image %}
+          <img src="{{ url_for('static', filename=doc.cover_image) }}" alt="" loading="lazy">
+          {% else %}
+          <div class="doc-card__placeholder" data-initial="{{ doc.title[:1]|upper }}"></div>
+          {% endif %}
+        </a>
+        <div class="doc-card__body">
+          <div class="doc-card__meta">
+            {% for tag in doc.tags[:3] %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+            <span class="doc-card__time">{{ doc.reading_time }} min read</span>
+          </div>
+          <h3 class="doc-card__title"><a href="{{ url_for('docs.view', slug=doc.slug) }}">{{ doc.title }}</a></h3>
+          <p class="doc-card__summary">{{ doc.summary_or_excerpt }}</p>
+          <div class="doc-card__footer">
+            <span class="doc-card__author">{{ doc.author.effective_name }}</span>
+            <span class="doc-card__stats">
+              <button class="btn btn-ghost btn-sm" type="button"
+                      data-save-btn data-doc-id="{{ doc.id }}">★ Saved</button>
+            </span>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {{ ui.pagination(pagination, 'dashboard.saves') }}
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state__art" aria-hidden="true">
+        <svg viewBox="0 0 200 140" width="200" height="140">
+          <path d="M70 25h60v90l-30-22-30 22z" fill="var(--primary-soft)" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>No saves yet</h3>
+      <p>Tap the ★ Save button on any document and it will show up here.</p>
+      <a class="btn btn-primary" href="{{ url_for('main.home') }}">Browse the feed</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}" defer></script>
+{% endblock %}

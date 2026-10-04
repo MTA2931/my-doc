@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Site settings — Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'settings' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Site settings</h1>
+        <p class="page-head__subtitle">Global configuration — applies to every visitor.</p>
+      </div>
+    </div>
+
+    <div class="card" style="max-width: 640px;">
+      {% if form.errors %}
+      <div class="form-error-summary" role="alert">
+        {% for field, errors in form.errors.items() %}
+          {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="field {% if form.site_name.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.site_name.id }}">Site name</label>
+          {{ form.site_name(class_='input', maxlength=60, required=true) }}
+          {% for error in form.site_name.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ form.site_tagline.id }}">Tagline</label>
+          {{ form.site_tagline(class_='input', maxlength=140, placeholder='Where knowledge gets documented.') }}
+        </div>
+
+        <div class="field {% if form.footer_note.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.footer_note.id }}">Footer note</label>
+          {{ form.footer_note(class_='input', maxlength=140, required=true) }}
+          <p class="field__hint">Displayed in the footer of every public page.</p>
+          {% for error in form.footer_note.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ form.default_theme.id }}">Default theme</label>
+          {{ form.default_theme(class_='input') }}
+          <p class="field__hint">Applied when a visitor hasn't chosen a theme yet.</p>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row" for="{{ form.registration_enabled.id }}">
+            {{ form.registration_enabled() }}
+            <span>Allow new registrations</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row" for="{{ form.maintenance_mode.id }}">
+            {{ form.maintenance_mode() }}
+            <span>Maintenance mode (blocks non-staff visitors)</span>
+          </label>
+          {% if form.maintenance_mode.data %}
+          <p class="field__error" role="alert">⚠ Maintenance mode is currently ON.</p>
+          {% endif %}
+        </div>
+
+        {{ form.submit(class_='btn btn-primary') }}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

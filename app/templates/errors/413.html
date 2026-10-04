@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Upload too large — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/errors.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="error-wrap container fade-in">
+  <div class="error-code" aria-hidden="true">413</div>
+  <h1>File too large</h1>
+  <p>The upload exceeds the maximum allowed size. Please choose a smaller image (4&nbsp;MB or less) and try again.</p>
+  <div class="error-actions">
+    <a class="btn btn-primary" href="{{ url_for('dashboard.settings') }}">Back to settings</a>
+    <a class="btn btn-secondary" href="{{ url_for('main.index') }}">Back to home</a>
+  </div>
+  <p class="error-footnote">MyDoc | Developed by MTA Company</p>
+</div>
+{% endblock %}

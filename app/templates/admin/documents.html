@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Documents — Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'documents' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Documents</h1>
+        <p class="page-head__subtitle">Moderate content: publish, feature, unpublish or delete.</p>
+      </div>
+    </div>
+
+    <form class="filter-bar" method="get" role="search">
+      <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search title, slug or author…"
+             aria-label="Search documents" style="flex:1; min-width: 200px;">
+      <select class="input" name="status" aria-label="Filter by status" style="max-width: 160px;">
+        <option value="all" {{ 'selected' if status == 'all' }}>All statuses</option>
+        <option value="published" {{ 'selected' if status == 'published' }}>Published</option>
+        <option value="draft" {{ 'selected' if status == 'draft' }}>Drafts</option>
+      </select>
+      <select class="input" name="featured" aria-label="Filter featured" style="max-width: 150px;">
+        <option value="all" {{ 'selected' if featured == 'all' }}>All</option>
+        <option value="yes" {{ 'selected' if featured == 'yes' }}>Featured</option>
+        <option value="no" {{ 'selected' if featured == 'no' }}>Not featured</option>
+      </select>
+      <button class="btn btn-secondary" type="submit">Filter</button>
+    </form>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Status</th>
+            <th scope="col">Views</th>
+            <th scope="col">Reports</th>
+            <th scope="col" style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in docs %}
+          <tr>
+            <td>
+              <a class="font-medium" href="{{ url_for('docs.view', slug=d.slug) }}">{{ d.title }}</a>
+              <p class="text-xs text-muted">/doc/{{ d.slug }}</p>
+            </td>
+            <td>@{{ d.author.username }}</td>
+            <td>
+              {% if d.status == 'published' %}<span class="badge badge--success">Published</span>
+              {% else %}<span class="badge badge--neutral">Draft</span>{% endif %}
+              {% if d.is_featured %}<span class="badge badge--warning">Featured</span>{% endif %}
+            </td>
+            <td>{{ d.views_count|numfmt }}</td>
+            <td>{% if d.reports.count() %}<span class="badge badge--danger">{{ d.reports.count() }}</span>
+                {% else %}<span class="text-muted">—</span>{% endif %}</td>
+            <td>
+              <div class="cell-actions">
+                <form method="post" action="{{ url_for('admin.document_action', doc_id=d.id) }}" class="inline-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="next" value="{{ url_for('admin.documents_list', q=q, status=status, featured=featured) }}">
+                  {% if d.status == 'published' %}
+                  <input type="hidden" name="action" value="unpublish">
+                  <button class="btn btn-secondary btn-sm" type="submit">Unpublish</button>
+                  {% else %}
+                  <input type="hidden" name="action" value="publish">
+                  <button class="btn btn-secondary btn-sm" type="submit">Publish</button>
+                  {% endif %}
+                </form>
+                <form method="post" action="{{ url_for('admin.document_action', doc_id=d.id) }}" class="inline-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="next" value="{{ url_for('admin.documents_list', q=q, status=status, featured=featured) }}">
+                  {% if d.is_featured %}
+                  <input type="hidden" name="action" value="unfeature">
+                  <button class="btn btn-ghost btn-sm" type="submit">Unfeature</button>
+                  {% else %}
+                  <input type="hidden" name="action" value="feature">
+                  <button class="btn btn-ghost btn-sm" type="submit">Feature</button>
+                  {% endif %}
+                </form>
+                <form method="post" action="{{ url_for('admin.document_action', doc_id=d.id) }}"
+                      class="inline-form" data-confirm="Delete '{{ d.title }}' permanently?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="next" value="{{ url_for('admin.documents_list', q=q, status=status, featured=featured) }}">
+                  <input type="hidden" name="action" value="delete">
+                  <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {{ ui.pagination(pagination, 'admin.documents_list', 'q=' ~ (q|urlencode) ~ '&status=' ~ (status|urlencode) ~ '&featured=' ~ (featured|urlencode)) }}
+  </div>
+</div>
+{% endblock %}

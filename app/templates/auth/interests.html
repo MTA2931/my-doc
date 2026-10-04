@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Choose your interests — {{ site_name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap container--narrow container fade-in">
+  <div class="form-card auth-card" style="width: min(560px, 100%);">
+    <h1 class="form-title">What do you want to read about?</h1>
+    <p class="form-subtitle">
+      Pick the topics that interest you — your <strong>For You</strong> feed
+      will be built around them. You can update them any time in Settings.
+    </p>
+
+    {% if form.errors %}
+    <div class="form-error-summary" role="alert">
+      {% for field, errors in form.errors.items() %}
+        {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        <div class="chip-cloud" data-chip-cloud>
+          {% for tag in all_tags %}
+          <button type="button" class="chip{% if tag.name in selected %} is-selected{% endif %}"
+                  data-chip value="{{ tag.name }}" aria-pressed="{{ 'true' if tag.name in selected else 'false' }}">
+            {{ tag.name }}
+          </button>
+          {% endfor %}
+        </div>
+        <p class="chip-count"><span data-chip-count>{{ selected|length }}</span> selected</p>
+        {{ form.interests(class_='input', data_chip_target='true', readonly=true, value=selected|join(', '),
+                          placeholder='Your selected interests') }}
+        {% for error in form.interests.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="wizard-nav">
+        {{ form.submit(class_='btn btn-primary') }}
+        <a class="btn btn-ghost" href="{{ url_for('main.home') }}">Skip for now</a>
+      </div>
+    </form>
+  </div>
+  <p class="auth-footnote">Developed by MTA Company</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/auth.js') }}" defer></script>
+{% endblock %}

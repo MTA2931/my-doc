@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}{{ profile.username }} — Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'users' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+        <li><a href="{{ url_for('admin.users_list') }}">Users</a></li>
+        <li aria-current="page">@{{ profile.username }}</li>
+      </ol>
+    </nav>
+
+    <div class="page-head">
+      <div class="row">
+        {{ ui.avatar(profile, 56) }}
+        <div>
+          <h1 class="page-head__title">{{ profile.effective_name }}
+            {% if profile.is_banned %}<span class="badge badge--danger">Banned</span>{% endif %}
+          </h1>
+          <p class="page-head__subtitle">@{{ profile.username }} · {{ profile.email }}
+            · joined {{ profile.created_at|strftime }}
+            {% if not profile.email_verified %} · <span class="badge badge--warning">Unverified</span>{% endif %}
+          </p>
+        </div>
+      </div>
+      <a class="btn btn-secondary" href="{{ url_for('admin.users_list') }}">← Back</a>
+    </div>
+
+    <div class="admin-user-grid">
+      <section class="card" aria-labelledby="role-title">
+        <div class="card__header"><h2 class="card__title" id="role-title">Role &amp; status</h2></div>
+
+        <form method="post" action="{{ url_for('admin.user_action', user_id=profile.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="next" value="{{ url_for('admin.user_detail', user_id=profile.id) }}">
+
+          <div class="field">
+            <label class="field__label" for="role-select">Role</label>
+            <select class="input" id="role-select" name="role"
+                    {% if profile.role == 'super_admin' and not current_user.is_super_admin %}disabled{% endif %}>
+              <option value="user" {{ 'selected' if profile.role == 'user' }}>Member</option>
+              <option value="support" {{ 'selected' if profile.role == 'support' }}>Support</option>
+              <option value="admin" {{ 'selected' if profile.role == 'admin' }}>Admin</option>
+              <option value="super_admin" {{ 'selected' if profile.role == 'super_admin' }}
+                      {% if not current_user.is_super_admin %}disabled{% endif %}>Super Admin</option>
+            </select>
+            {% if profile.role == 'super_admin' and not current_user.is_super_admin %}
+            <p class="field__hint">Only a Super Admin can modify a Super Admin.</p>
+            {% endif %}
+          </div>
+
+          <div class="row">
+            <input type="hidden" name="action" value="role">
+            <button class="btn btn-primary btn-sm" type="submit"
+                    {% if profile.id == current_user.id %}disabled title="You cannot change your own role here"{% endif %}>
+              Save role
+            </button>
+          </div>
+        </form>
+
+        <form method="post" action="{{ url_for('admin.user_action', user_id=profile.id) }}"
+              style="margin-top: var(--space-4);" class="inline-form"
+              data-confirm="{{ 'Unban' if profile.is_banned else 'Ban' }} @{{ profile.username }}?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="next" value="{{ url_for('admin.user_detail', user_id=profile.id) }}">
+          {% if profile.is_banned %}
+          <input type="hidden" name="action" value="unban">
+          <button class="btn btn-secondary btn-sm" type="submit">Unban account</button>
+          {% else %}
+          <input type="hidden" name="action" value="ban">
+          <button class="btn btn-danger btn-sm" type="submit"
+                  {% if profile.id == current_user.id %}disabled{% endif %}>Ban account</button>
+          {% endif %}
+        </form>
+
+        <div class="profile-facts" style="margin-top: var(--space-4);">
+          <p class="text-sm"><strong>Bio:</strong> {{ profile.bio or '—' }}</p>
+          <p class="text-sm"><strong>Interests:</strong>
+            {% if profile.interests %}{{ profile.interests | map(attribute='name') | join(', ') }}
+            {% else %}—{% endif %}
+          </p>
+          <p class="text-sm"><strong>Last login:</strong>
+            {{ profile.last_login_at|time_ago if profile.last_login_at else 'never' }}
+          </p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="docs-title">
+        <div class="card__header">
+          <h2 class="card__title" id="docs-title">Recent documents</h2>
+          <span class="text-xs text-muted">{{ docs|length }} shown</span>
+        </div>
+        {% if docs %}
+        <ul class="recent-list">
+          {% for d in docs %}
+          <li class="recent-item">
+            <div>
+              <a class="recent-item__title" href="{{ url_for('docs.view', slug=d.slug) }}">{{ d.title }}</a>
+              <p class="text-xs text-muted">{{ d.views_count|numfmt }} views · updated {{ d.updated_at|time_ago }}</p>
+            </div>
+            <div class="row">
+              {% if d.status == 'published' %}<span class="badge badge--success">Published</span>
+              {% else %}<span class="badge badge--neutral">Draft</span>{% endif %}
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('docs.edit', doc_id=d.id) }}">Edit</a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted text-sm">This user hasn't written any documents.</p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

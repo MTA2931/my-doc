@@ -1,0 +1,48 @@
+{# Admin sidebar. Expects `section` in context. Role-gated items are hidden
+   here AND enforced server-side by capability_required decorators. #}
+<button class="btn btn-secondary btn-sm sidebar-toggle" type="button" data-sidebar-toggle>
+  ☰ Menu
+</button>
+<aside class="app-sidebar" aria-label="Admin navigation">
+  <div class="sidebar-group">
+    <p class="sidebar-title">Moderation</p>
+    <ul class="sidebar-nav">
+      <li><a class="sidebar-link {% if section == 'dashboard' %}is-active{% endif %}"
+             href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a></li>
+      <li><a class="sidebar-link {% if section == 'documents' %}is-active{% endif %}"
+             href="{{ url_for('admin.documents_list') }}">📄 Documents</a></li>
+      <li><a class="sidebar-link {% if section == 'tickets' %}is-active{% endif %}"
+             href="{{ url_for('admin.tickets_list') }}">🎫 Tickets</a></li>
+      <li><a class="sidebar-link {% if section == 'reports' %}is-active{% endif %}"
+             href="{{ url_for('admin.reports_list') }}">🚩 Reports
+        {% if current_user.can('admin.reports') %}
+        <span class="badge badge--warning sidebar-badge" data-pending-reports hidden>0</span>
+        {% endif %}
+      </a></li>
+    </ul>
+  </div>
+
+  {% if current_user.can('admin.users') %}
+  <div class="sidebar-group">
+    <p class="sidebar-title">Management</p>
+    <ul class="sidebar-nav">
+      <li><a class="sidebar-link {% if section == 'users' %}is-active{% endif %}"
+             href="{{ url_for('admin.users_list') }}">👥 Users</a></li>
+      {% if current_user.can('admin.admins') %}
+      <li><a class="sidebar-link {% if section == 'admins' %}is-active{% endif %}"
+             href="{{ url_for('admin.admins') }}">🛡️ Admins</a></li>
+      {% endif %}
+      <li><a class="sidebar-link {% if section == 'settings' %}is-active{% endif %}"
+             href="{{ url_for('admin.settings') }}">⚙️ Site settings</a></li>
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="sidebar-group">
+    <a class="btn btn-secondary btn-block" href="{{ url_for('dashboard.index') }}">← User panel</a>
+    <p class="text-xs text-muted" style="margin-top: var(--space-3);">
+      Signed in as <strong>{{ current_user.username }}</strong>
+      · <span class="badge badge--primary">{{ current_user.role_label }}</span>
+    </p>
+  </div>
+</aside>

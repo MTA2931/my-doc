@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/errors.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="error-wrap container fade-in">
+  <div class="error-code" aria-hidden="true">503</div>
+  <h1>We're down for maintenance</h1>
+  <p>{{ site_name }} is undergoing scheduled maintenance. We'll be back online shortly — thank you for your patience.</p>
+  <div class="error-actions">
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Check again</a>
+  </div>
+  <p class="error-footnote">MyDoc | Developed by MTA Company</p>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Log in — {{ site_name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap container--narrow container fade-in">
+  <div class="form-card auth-card">
+    <div class="auth-card__head">
+      <h1 class="form-title">Welcome back</h1>
+      <p class="form-subtitle">Log in to keep writing and reading on {{ site_name }}.</p>
+    </div>
+
+    {% if form.errors %}
+    <div class="form-error-summary" role="alert">
+      <strong>Please fix the following:</strong>
+      <ul>
+        {% for field, errors in form.errors.items() %}
+          {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" novalidate data-validate>
+      {{ form.hidden_tag() }}
+
+      <div class="field {% if form.email.errors %}field--error{% endif %}">
+        <label class="field__label" for="{{ form.email.id }}">E-mail or username</label>
+        {{ form.email(class_='input', placeholder='you@example.com or username', autocomplete='username', autofocus=true, required=true) }}
+        {% for error in form.email.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field {% if form.password.errors %}field--error{% endif %}">
+        <label class="field__label" for="{{ form.password.id }}">Password</label>
+        {{ form.password(class_='input', placeholder='Your password', autocomplete='current-password', required=true) }}
+        {% for error in form.password.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="row row--between auth-row">
+        <label class="checkbox-row" for="{{ form.remember.id }}">
+          {{ form.remember() }} <span>Remember me</span>
+        </label>
+        <a class="text-sm" href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+      </div>
+
+      {{ form.submit(class_='btn btn-primary btn-block btn-lg') }}
+    </form>
+
+    <p class="auth-alt">
+      New to {{ site_name }}?
+      {% if registration_enabled %}
+      <a href="{{ url_for('auth.signup') }}">Sign Up for Free</a>
+      {% else %}
+      <span class="text-muted">Registration is currently disabled.</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <p class="auth-footnote">Developed by MTA Company</p>
+</div>
+{% endblock %}

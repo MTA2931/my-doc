@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up — {{ site_name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap container--narrow container fade-in">
+  <div class="form-card auth-card" data-signup-wizard>
+    <div class="auth-card__head">
+      <h1 class="form-title">Sign Up for Free</h1>
+      <p class="form-subtitle">Join {{ site_name }} and start publishing in minutes.</p>
+    </div>
+
+    <ol class="wizard-steps" aria-label="Signup steps">
+      <li class="is-active" data-step-indicator="1">1. Account</li>
+      <li data-step-indicator="2">2. Interests</li>
+    </ol>
+
+    {% if form.errors %}
+    <div class="form-error-summary" role="alert">
+      <strong>Please fix the following:</strong>
+      <ul>
+        {% for field, errors in form.errors.items() %}
+          {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" novalidate data-validate>
+      {{ form.hidden_tag() }}
+
+      <!-- Step 1: account -->
+      <section class="wizard-panel" data-step-panel="1">
+        <div class="field {% if form.username.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.username.id }}">Username</label>
+          {{ form.username(class_='input', placeholder='e.g. ada_lovelace', autocomplete='username', maxlength=30, required=true) }}
+          <p class="field__hint">3–30 characters: letters, numbers and underscores.</p>
+          {% for error in form.username.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field {% if form.email.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.email.id }}">E-mail</label>
+          {{ form.email(class_='input', placeholder='you@example.com', autocomplete='email', type='email', required=true) }}
+          {% for error in form.email.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field {% if form.password.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.password.id }}">Password</label>
+          {{ form.password(class_='input', placeholder='Create a strong password', autocomplete='new-password', required=true, data_strength_target='true') }}
+          <div class="strength" data-strength hidden>
+            <div class="strength__bars" aria-hidden="true">
+              <span class="strength__bar" data-level="1"></span>
+              <span class="strength__bar" data-level="2"></span>
+              <span class="strength__bar" data-level="3"></span>
+              <span class="strength__bar" data-level="4"></span>
+            </div>
+            <span class="strength__label" data-strength-label>Very weak</span>
+          </div>
+          {% for error in form.password.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field {% if form.confirm.errors %}field--error{% endif %}">
+          <label class="field__label" for="{{ form.confirm.id }}">Confirm password</label>
+          {{ form.confirm(class_='input', placeholder='Repeat your password', autocomplete='new-password', required=true) }}
+          {% for error in form.confirm.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="field {% if form.agree.errors %}field--error{% endif %}">
+          <label class="checkbox-row" for="{{ form.agree.id }}">
+            {{ form.agree() }}
+            <span>I agree to the terms and community guidelines.</span>
+          </label>
+          {% for error in form.agree.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn-primary" data-next-step>Continue</button>
+        </div>
+      </section>
+
+      <!-- Step 2: interests -->
+      <section class="wizard-panel" data-step-panel="2" hidden>
+        <div class="field">
+          <span class="field__label">What are you into?</span>
+          <p class="field__hint">Pick at least one topic — we'll personalise your feed. You can change them later in Settings.</p>
+          <div class="chip-cloud" data-chip-cloud>
+            {% for tag in all_tags %}
+            <button type="button" class="chip" data-chip value="{{ tag.name }}">{{ tag.name }}</button>
+            {% endfor %}
+          </div>
+          <p class="chip-count"><span data-chip-count>0</span> selected</p>
+          {{ form.interests(class_='input', data_chip_target='true', readonly=true, placeholder='Selected interests appear here') }}
+          {% for error in form.interests.errors %}<p class="field__error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn-secondary" data-prev-step>Back</button>
+          <button type="submit" class="btn btn-primary">Create account</button>
+        </div>
+        <p class="text-xs text-muted text-center" style="margin-top: var(--space-3);">
+          Not sure yet? Create your account without interests — we'll ask again
+          right after sign-up.
+        </p>
+
+      </section>
+    </form>
+
+    <p class="auth-alt">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+    </p>
+  </div>
+
+  <p class="auth-footnote">Developed by MTA Company</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/auth.js') }}" defer></script>
+{% endblock %}
+

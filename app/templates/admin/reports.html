@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% import "macros/ui.html" as ui %}
+
+{% block title %}Reports — Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'reports' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Reports</h1>
+        <p class="page-head__subtitle">Review user-submitted reports on documents.</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Filter reports">
+      <a class="tab{% if status == 'all' %} is-active{% endif %}" role="tab"
+         aria-selected="{{ 'true' if status == 'all' else 'false' }}"
+         href="{{ url_for('admin.reports_list', status='all') }}">All</a>
+      {% for s in ['pending', 'reviewing', 'dismissed', 'actioned'] %}
+      <a class="tab{% if status == s %} is-active{% endif %}" role="tab"
+         aria-selected="{{ 'true' if status == s else 'false' }}"
+         href="{{ url_for('admin.reports_list', status=s) }}">{{ s|title }}</a>
+      {% endfor %}
+    </div>
+
+    {% if reports %}
+    <div class="report-list">
+      {% for r in reports %}
+      <article class="card report-card {% if r.status == 'pending' %}report-card--pending{% endif %} reveal">
+        <div class="card__header">
+          <div>
+            <div class="row" style="gap: var(--space-2);">
+              {{ ui.status_badge(r.status) }}
+              <span class="badge badge--danger">{{ r.reason|title }}</span>
+              <span class="text-xs text-muted">#{{ r.id }} · {{ r.created_at|time_ago }}</span>
+            </div>
+            <h3 class="card__title" style="margin-top: var(--space-2);">
+              {% if r.document %}
+              <a href="{{ url_for('docs.view', slug=r.document.slug) }}">{{ r.document.title }}</a>
+              <span class="text-xs text-muted">by @{{ r.document.author.username }}</span>
+              {% else %}
+              <span class="text-muted">Document was deleted</span>
+              {% endif %}
+            </h3>
+          </div>
+          <div class="row text-xs text-muted">
+            Reported by @{{ r.reporter.username }}
+          </div>
+        </div>
+
+        {% if r.details %}
+        <blockquote class="report-details">{{ r.details }}</blockquote>
+        {% endif %}
+
+        {% if r.resolution_note %}
+        <p class="text-sm text-muted">Resolution: {{ r.resolution_note }}
+          {% if r.handler %} · by @{{ r.handler.username }}{% endif %}</p>
+        {% endif %}
+
+        {% if r.status in ('pending', 'reviewing') and r.document %}
+        <div class="cell-actions" style="justify-content: flex-start; margin-top: var(--space-3);">
+          <form method="post" action="{{ url_for('admin.report_action', report_id=r.id) }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="dismiss">
+            <button class="btn btn-ghost btn-sm" type="submit">Dismiss</button>
+          </form>
+          <form method="post" action="{{ url_for('admin.report_action', report_id=r.id) }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="unpublish">
+            <button class="btn btn-secondary btn-sm" type="submit"
+                    data-confirm-static="Unpublish this document?">Unpublish</button>
+          </form>
+          <form method="post" action="{{ url_for('admin.report_action', report_id=r.id) }}"
+                class="inline-form" data-confirm="Delete this document permanently?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="delete">
+            <button class="btn btn-danger btn-sm" type="submit">Delete doc</button>
+          </form>
+          {% if r.document and r.document.author and not r.document.author.is_banned %}
+          <form method="post" action="{{ url_for('admin.report_action', report_id=r.id) }}"
+                class="inline-form" data-confirm="Ban the author of this document?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="ban">
+            <button class="btn btn-danger btn-sm" type="submit">Ban author</button>
+          </form>
+          {% endif %}
+        </div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+
+    {{ ui.pagination(pagination, 'admin.reports_list', 'status=' ~ (status|urlencode)) }}
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state__art" aria-hidden="true">
+        <svg viewBox="0 0 200 140" width="200" height="140">
+          <path d="M60 20 v100 l30 -18 30 18 V20z" fill="var(--success-soft)" stroke="var(--success)" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M78 60 l12 12 24 -26" fill="none" stroke="var(--success)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>All clear</h3>
+      <p>No reports match this filter. Great job keeping the platform safe!</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

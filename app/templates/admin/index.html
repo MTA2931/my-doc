@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — {{ site_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container app-layout">
+  {% set section = 'dashboard' %}
+  {% include 'admin/_sidebar.html' %}
+
+  <div class="app-main fade-in">
+    <div class="page-head">
+      <div>
+        <h1 class="page-head__title">Admin dashboard</h1>
+        <p class="page-head__subtitle">Platform health at a glance — updated live from the database.</p>
+      </div>
+      <span class="badge badge--primary">{{ current_user.role_label }} access</span>
+    </div>
+
+    <div class="stat-grid" aria-label="Platform statistics">
+      <div class="stat-card">
+        <span class="stat-card__label">Users</span>
+        <span class="stat-card__value" data-count="{{ stats.users }}">0</span>
+        <span class="stat-card__hint">{{ stats.banned_users }} banned</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Documents</span>
+        <span class="stat-card__value" data-count="{{ stats.documents }}">0</span>
+        <span class="stat-card__hint">{{ stats.published }} published</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Open tickets</span>
+        <span class="stat-card__value" data-count="{{ stats.open_tickets }}">0</span>
+        <span class="stat-card__hint">need attention</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Pending reports</span>
+        <span class="stat-card__value" data-count="{{ stats.pending_reports }}">0</span>
+        <span class="stat-card__hint">awaiting review</span>
+      </div>
+    </div>
+
+    <div class="admin-charts">
+      <section class="card" aria-labelledby="growth-title">
+        <div class="card__header">
+          <h2 class="card__title" id="growth-title">Growth — last 14 days</h2>
+          <div class="chart-legend text-xs">
+            <span class="legend-dot legend-dot--users"></span> Users
+            <span class="legend-dot legend-dot--docs"></span> Documents
+          </div>
+        </div>
+        <canvas id="growth-chart" height="220" role="img"
+                aria-label="Line chart of new users and documents over the last 14 days"
+                data-chart='{{ chart|safe }}'></canvas>
+      </section>
+
+      <section class="card" aria-labelledby="audit-title">
+        <div class="card__header">
+          <h2 class="card__title" id="audit-title">Recent admin actions</h2>
+        </div>
+        {% if audit %}
+        <ul class="audit-list">
+          {% for entry in audit %}
+          <li class="audit-item">
+            <span class="badge badge--neutral">{{ entry.action }}</span>
+            <div>
+              <p class="text-sm">{{ entry.admin.effective_name if entry.admin else 'System' }}
+                {% if entry.target_type %}<span class="text-muted">→ {{ entry.target_type }}{% if entry.target_id %} #{{ entry.target_id }}{% endif %}</span>{% endif %}
+              </p>
+              <p class="text-xs text-muted">{{ entry.created_at|time_ago }}</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted text-sm">No admin actions recorded yet.</p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pages/admin.js') }}" defer></script>
+{% endblock %}

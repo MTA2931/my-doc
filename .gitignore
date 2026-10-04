@@ -1,0 +1,49 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Database & instance data
+instance/
+*.db
+*.sqlite3
+*.sqlite
+
+# Uploads
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Flask / tooling
+flask.cfg
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node (not used, safety net)
+node_modules/

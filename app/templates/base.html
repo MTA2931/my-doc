@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-user-theme-default="{% if current_user.is_authenticated %}{{ current_user.theme }}{% endif %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="MTA Company">
+  <meta name="description" content="{% block meta_description %}MyDoc — a public platform for documents about programming, AI and the digital world. Developed by MTA Company.{% endblock %}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/errors.css') }}">
+  {% block extra_css %}{% endblock %}
+
+  <script>
+    /* Prevent flash of wrong theme — runs before first paint. */
+    (function () {
+      try {
+        var stored = localStorage.getItem('mydoc-theme');
+        var fallback = document.documentElement.getAttribute('data-user-theme-default') || 'auto';
+        var pref = stored || fallback;
+        var resolved = pref;
+        if (pref === 'auto') {
+          resolved = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.style.colorScheme = resolved;
+      } catch (e) { /* storage unavailable — keep default */ }
+    })();
+  </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  {% block navbar %}
+  <header class="site-header" id="site-header">
+    <nav class="navbar container" aria-label="Primary">
+      <a class="brand" href="{{ url_for('main.index') }}" aria-label="MyDoc home">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="32" height="32" class="brand__mark">
+        <span class="brand__name">{{ site_name }}</span>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('main.landing') }}" class="nav-link">About</a></li>
+          {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('main.home') }}" class="nav-link">Home</a></li>
+          <li><a href="{{ url_for('dashboard.index') }}" class="nav-link">Dashboard</a></li>
+          <li><a href="{{ url_for('docs.create') }}" class="nav-link">Write</a></li>
+          {% endif %}
+        </ul>
+        <div class="nav-actions">
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" fill="currentColor"/>
+              <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+                <line x1="4.9" y1="4.9" x2="7" y2="7"/><line x1="17" y1="17" x2="19.1" y2="19.1"/>
+                <line x1="4.9" y1="19.1" x2="7" y2="17"/><line x1="17" y1="7" x2="19.1" y2="4.9"/>
+              </g>
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" fill="currentColor"/>
+            </svg>
+          </button>
+
+          {% if current_user.is_authenticated %}
+          <div class="dropdown" data-dropdown>
+            <button class="avatar-btn" type="button" data-dropdown-toggle aria-haspopup="true" aria-expanded="false">
+              {% if current_user.avatar %}
+              <img src="{{ url_for('static', filename=current_user.avatar) }}" alt="" width="32" height="32">
+              {% else %}
+              <span class="avatar avatar--initials" aria-hidden="true">{{ current_user.effective_name[:1]|upper }}</span>
+              {% endif %}
+              <span class="avatar-btn__name">{{ current_user.effective_name }}</span>
+            </button>
+            <ul class="dropdown-menu" data-dropdown-menu role="menu">
+              <li role="none"><a role="menuitem" href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+              <li role="none"><a role="menuitem" href="{{ url_for('dashboard.documents') }}">My Documents</a></li>
+              <li role="none"><a role="menuitem" href="{{ url_for('dashboard.saves') }}">Saves</a></li>
+              <li role="none"><a role="menuitem" href="{{ url_for('dashboard.tickets') }}">Support</a></li>
+              <li role="none"><a role="menuitem" href="{{ url_for('dashboard.settings') }}">Settings</a></li>
+              {% if current_user.is_staff %}
+              <li role="none" class="dropdown-sep"></li>
+              <li role="none"><a role="menuitem" href="{{ url_for('admin.dashboard') }}">Admin Panel</a></li>
+              {% endif %}
+              <li role="none" class="dropdown-sep"></li>
+              <li role="none">
+                <form action="{{ url_for('auth.logout') }}" method="post" class="dropdown-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" role="menuitem" class="dropdown-logout">Log out</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Log In</a>
+          {% if registration_enabled %}
+          <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-sm">Sign Up for Free</a>
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+  {% endblock %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-stack container" id="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+      <div class="flash flash--{{ category }}" role="alert">{{ message }}
+        <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main id="main" class="{% block main_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand brand--footer" href="{{ url_for('main.index') }}">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="28" height="28">
+          <span>{{ site_name }}</span>
+        </a>
+        <p class="footer-tagline">{{ site_tagline or 'Where knowledge gets documented.' }}</p>
+      </div>
+      <nav aria-label="Footer">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="{{ url_for('main.landing') }}">About</a></li>
+          <li><a href="{{ url_for('main.home') }}">Home</a></li>
+          <li><a href="{{ url_for('auth.signup') }}">Sign up</a></li>
+          <li><a href="{{ url_for('dashboard.tickets') }}">Support</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://github.com/mta-company/my-doc" rel="noopener noreferrer" target="_blank">GitHub</a></li>
+          <li><a href="https://github.com/mta-company/my-doc/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">Security</a></li>
+          <li><a href="https://github.com/mta-company/my-doc/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" target="_blank">Contributing</a></li>
+          <li><a href="https://github.com/mta-company/my-doc/blob/main/CODE_OF_CONDUCT.md" rel="noopener noreferrer" target="_blank">Code of Conduct</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; {{ current_year }} {{ site_name }} — <strong>{{ footer_note }}</strong></p>
+      <p class="footer-cc">MIT License · Open source</p>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="{{ url_for('static', filename='js/core.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/components.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/api.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/highlight.js') }}" defer></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
