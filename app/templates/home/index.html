@@ -93,7 +93,8 @@
     </button>
     {% endif %}
     <p class="feed-end" data-feed-end {% if feed.has_more %}hidden{% endif %}>
-      You're all caught up 🎉
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-circle-check"></use></svg>
+      You're all caught up
     </p>
   </div>
 </div>

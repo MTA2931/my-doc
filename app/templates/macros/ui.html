@@ -1,6 +1,12 @@
 {# Reusable UI macros for MyDoc templates. #}
 
+{# Lucide icon from the vendored sprite (inherits color & sizing via .icon) #}
+{% macro icon(name, cls='') -%}
+<svg class="icon{% if cls %} {{ cls }}{% endif %}" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-{{ name }}"></use></svg>
+{%- endmacro %}
+
 {% macro avatar(user, size=32) %}
+
 {% if user.avatar %}
 <img class="avatar" src="{{ url_for('static', filename=user.avatar) }}" alt="{{ user.effective_name }}" width="{{ size }}" height="{{ size }}">
 {% else %}

@@ -6,8 +6,8 @@
 
 | Version | Supported |
 |---|---|
-| 1.x (main branch) | ✅ actively maintained |
-| < 1.0 | ✅ security fixes only |
+| 1.x (main branch) | Yes — actively maintained |
+| < 1.0 | Yes — security fixes only |
 
 ## Reporting a vulnerability
 

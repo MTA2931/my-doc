@@ -31,7 +31,7 @@
             const icon = b.querySelector('[data-save-icon]');
             const label = b.querySelector('[data-save-label]');
             const count = b.querySelector('[data-save-count]');
-            if (icon) icon.textContent = data.saved ? '★' : '☆';
+            if (icon) icon.classList.toggle('icon--filled', data.saved);
             if (label) label.textContent = data.saved ? 'Saved' : 'Save';
             if (count) count.textContent = String(data.count);
           });
@@ -102,7 +102,7 @@
         try {
           await window.MyDocAPI.setDocumentStatus(docId, next);
           MyDoc.toast(
-            next === 'published' ? 'Document published! 🎉' : 'Document moved to drafts.',
+            next === 'published' ? 'Document published!' : 'Document moved to drafts.',
             'success'
           );
           setTimeout(() => window.location.reload(), 600);

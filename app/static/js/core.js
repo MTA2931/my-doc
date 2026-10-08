@@ -103,13 +103,23 @@
   };
 
   // ---------------------------------------------------------------- Toasts
+  const TOAST_ICONS = {
+    success: 'circle-check',
+    error: 'circle-x',
+    warning: 'triangle-alert',
+    info: 'info',
+  };
+
   MyDoc.toast = (message, type = 'info', timeout = 4200) => {
     const region = document.getElementById('toast-region');
     if (!region) return;
     const el = document.createElement('div');
     el.className = `toast toast--${type}`;
     el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    const icon = TOAST_ICONS[type] || TOAST_ICONS.info;
     el.innerHTML =
+      `<svg class="icon toast__icon" aria-hidden="true" focusable="false">` +
+      `<use href="/static/vendor/lucide-sprite.svg#i-${icon}"></use></svg>` +
       `<span>${MyDoc.escapeHtml(message)}</span>` +
       '<button type="button" class="toast__close" aria-label="Dismiss">&times;</button>';
     region.appendChild(el);

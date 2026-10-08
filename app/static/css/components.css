@@ -4,6 +4,26 @@
    ========================================================================== */
 
 /* ------------------------------- Buttons -------------------------------- */
+.icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.icon--filled { fill: currentColor; }
+
+/* Context sizing for consistent icon dimensions */
+.sidebar-link .icon { width: 18px; height: 18px; }
+.toast .icon { width: 18px; height: 18px; margin-top: 1px; }
+.toast .toast__icon { color: var(--info); }
+.toast--success .toast__icon { color: var(--success); }
+.toast--error .toast__icon { color: var(--danger); }
+.toast--warning .toast__icon { color: var(--warning); }
+.btn .icon { width: 1.05em; height: 1.05em; }
+
 .btn {
   display: inline-flex;
   align-items: center;

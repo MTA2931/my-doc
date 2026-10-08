@@ -1,17 +1,18 @@
 {# User panel sidebar. Expects `active` in context. #}
+{% import "macros/ui.html" as ui %}
 <button class="btn btn-secondary btn-sm sidebar-toggle" type="button" data-sidebar-toggle>
-  ☰ Menu
+  {{ ui.icon('menu') }} Menu
 </button>
 <aside class="app-sidebar" aria-label="User panel navigation">
   <div class="sidebar-group">
     <p class="sidebar-title">Overview</p>
     <ul class="sidebar-nav">
       <li><a class="sidebar-link {% if active == 'dashboard' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.index') }}" {% if active == 'dashboard' %}aria-current="page"{% endif %}>📊 Dashboard</a></li>
+             href="{{ url_for('dashboard.index') }}" {% if active == 'dashboard' %}aria-current="page"{% endif %}>{{ ui.icon('layout-dashboard') }} Dashboard</a></li>
       <li><a class="sidebar-link {% if active == 'documents' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.documents') }}" {% if active == 'documents' %}aria-current="page"{% endif %}>📄 My Documents</a></li>
+             href="{{ url_for('dashboard.documents') }}" {% if active == 'documents' %}aria-current="page"{% endif %}>{{ ui.icon('file-text') }} My Documents</a></li>
       <li><a class="sidebar-link {% if active == 'saves' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.saves') }}" {% if active == 'saves' %}aria-current="page"{% endif %}>🔖 Saves</a></li>
+             href="{{ url_for('dashboard.saves') }}" {% if active == 'saves' %}aria-current="page"{% endif %}>{{ ui.icon('bookmark') }} Saves</a></li>
     </ul>
   </div>
 
@@ -19,11 +20,11 @@
     <p class="sidebar-title">Account</p>
     <ul class="sidebar-nav">
       <li><a class="sidebar-link {% if active == 'tickets' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.tickets') }}" {% if active == 'tickets' %}aria-current="page"{% endif %}>🎫 Support tickets</a></li>
+             href="{{ url_for('dashboard.tickets') }}" {% if active == 'tickets' %}aria-current="page"{% endif %}>{{ ui.icon('ticket') }} Support tickets</a></li>
       <li><a class="sidebar-link {% if active == 'settings' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.settings') }}" {% if active == 'settings' %}aria-current="page"{% endif %}>⚙️ Settings</a></li>
+             href="{{ url_for('dashboard.settings') }}" {% if active == 'settings' %}aria-current="page"{% endif %}>{{ ui.icon('settings') }} Settings</a></li>
       <li><a class="sidebar-link {% if active == 'password' %}is-active{% endif %}"
-             href="{{ url_for('dashboard.change_password') }}" {% if active == 'password' %}aria-current="page"{% endif %}>🔑 Change password</a></li>
+             href="{{ url_for('dashboard.change_password') }}" {% if active == 'password' %}aria-current="page"{% endif %}>{{ ui.icon('key') }} Change password</a></li>
     </ul>
   </div>
 
@@ -31,7 +32,7 @@
     <a class="btn btn-primary btn-block" href="{{ url_for('docs.create') }}">+ New Document</a>
     {% if current_user.is_staff %}
     <a class="btn btn-secondary btn-block" href="{{ url_for('admin.dashboard') }}" style="margin-top: var(--space-2);">
-      🛡️ Admin Panel
+      {{ ui.icon('shield') }} Admin Panel
     </a>
     {% endif %}
   </div>

@@ -79,7 +79,7 @@ class Config:
     MAX_CONTENT_LENGTH = _env_int("MAX_UPLOAD_MB", 4) * 1024 * 1024
     UPLOAD_FOLDER = os.path.join(ROOT_DIR, "app", "static", "uploads")
     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
-    ALLOWED_IMAGE_MIMES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+    ALLOWED_IMAGE_MIMES = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
 
     # --- CSRF / rate limiting ----------------------------------------------
     WTF_CSRF_TIME_LIMIT = 3600
@@ -96,11 +96,11 @@ class Config:
     SMTP_USER = os.environ.get("SMTP_USER", "")
     SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
     SMTP_USE_TLS = _env_bool("SMTP_USE_TLS", True)
-    SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:5000")
+    SITE_URL = os.environ.get("SITE_URL", "https://my-doc-u31b.onrender.com/")
 
     # --- Application --------------------------------------------------------
     SITE_NAME = "MyDoc"
-    DOCS_PER_PAGE = 10
+    DOCS_PER_PAGE = 12
     TOKEN_MAX_AGE_SECONDS = 3600  # e-mail verification / password reset tokens
     ACCOUNT_DELETION_CONFIRM = True
 
@@ -125,7 +125,7 @@ class TestingConfig(Config):
     }
     WTF_CSRF_ENABLED = False
     RATELIMIT_ENABLED = False
-    SERVER_NAME = "localhost"
+    SERVER_NAME = "my-doc"
     MAIL_SUPPRESS_SEND = True
     UPLOAD_FOLDER = os.path.join(ROOT_DIR, "instance", "test_uploads")
 

@@ -19,7 +19,7 @@
         try {
           await window.MyDocAPI.setDocumentStatus(id, next);
           MyDoc.toast(
-            next === 'published' ? 'Document published! 🎉' : 'Moved back to drafts.',
+            next === 'published' ? 'Document published!' : 'Moved back to drafts.',
             'success'
           );
           setTimeout(() => window.location.reload(), 500);
@@ -75,7 +75,10 @@
             }
             MyDoc.toast('Removed from your saves.', 'success');
           } else {
-            btn.textContent = '★ Saved';
+            const icon = btn.querySelector('[data-save-icon]');
+            const label = btn.querySelector('[data-save-label]');
+            if (icon) icon.classList.add('icon--filled');
+            if (label) label.textContent = 'Saved';
           }
         } catch (err) {
           MyDoc.toast(err.message || 'Could not update save.', 'error');

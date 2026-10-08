@@ -9,8 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Replaced every emoji in the UI with **Lucide** icons (vendored locally at
+  `app/static/vendor/lucide-sprite.svg`, ISC license — no CDN): sidebars,
+  landing feature grid, editor toolbar, save/report buttons, toasts,
+  dashboard greeting, empty states, settings warnings and e-mail headings.
+  Emoji-free chip checkmark uses an inline SVG mask; `scripts/scan_emojis.py`
+  and `scripts/verify_icons.py` enforce zero emojis project-wide.
+
 ### Added
 - (placeholder for work in progress)
+
 
 ## [1.0.0] - 2026-10-04
 

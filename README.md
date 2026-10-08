@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📄 MyDoc
+# MyDoc
 
 **A public platform for documents about programming, AI and the digital world.**
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [Concept](#concept)
 - [Features](#features)

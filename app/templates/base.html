@@ -50,7 +50,6 @@
 
       <div class="nav-menu" id="nav-menu">
         <ul class="nav-links">
-          <li><a href="{{ url_for('main.landing') }}" class="nav-link">About</a></li>
           {% if current_user.is_authenticated %}
           <li><a href="{{ url_for('main.home') }}" class="nav-link">Home</a></li>
           <li><a href="{{ url_for('dashboard.index') }}" class="nav-link">Dashboard</a></li>
@@ -160,7 +159,7 @@
       </nav>
     </div>
     <div class="container footer-bottom">
-      <p>&copy; {{ current_year }} {{ site_name }} — <strong>{{ footer_note }}</strong></p>
+      <p>Copyright {{ current_year }} {{ site_name }} — <strong>{{ footer_note }}</strong></p>
       <p class="footer-cc">MIT License · Open source</p>
     </div>
   </footer>

@@ -221,9 +221,14 @@
   color: var(--text-secondary);
   cursor: pointer;
   min-width: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   transition: background-color var(--duration-fast) var(--ease-out),
               color var(--duration-fast) var(--ease-out);
 }
+.editor-toolbar button .icon { width: 15px; height: 15px; }
 .editor-toolbar button:hover { background: var(--surface-hover); color: var(--primary); }
 .editor-toolbar .toolbar-sep { width: 1px; background: var(--border); margin-inline: var(--space-1); }
 

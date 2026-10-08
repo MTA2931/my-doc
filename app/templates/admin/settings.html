@@ -67,7 +67,10 @@
             <span>Maintenance mode (blocks non-staff visitors)</span>
           </label>
           {% if form.maintenance_mode.data %}
-          <p class="field__error" role="alert">⚠ Maintenance mode is currently ON.</p>
+          <p class="field__error" role="alert">
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-triangle-alert"></use></svg>
+            Maintenance mode is currently ON.
+          </p>
           {% endif %}
         </div>
 

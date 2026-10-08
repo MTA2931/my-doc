@@ -54,12 +54,12 @@
         <button class="btn btn-secondary btn-sm" type="button"
                 data-save-btn data-doc-id="{{ doc.id }}"
                 aria-pressed="{{ 'true' if is_saved else 'false' }}">
-          <span data-save-icon>{{ '★' if is_saved else '☆' }}</span>
+          <svg class="icon{% if is_saved %} icon--filled{% endif %}" data-save-icon aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-star"></use></svg>
           <span data-save-label>{{ 'Saved' if is_saved else 'Save' }}</span>
           <span class="text-muted">(<span data-save-count>{{ doc.save_count }}</span>)</span>
         </button>
         <button class="btn btn-ghost btn-sm" type="button" data-report-btn data-doc-id="{{ doc.id }}">
-          ⚑ Report
+          {{ ui.icon('flag') }} Report
         </button>
 
         {% if is_owner %}
@@ -106,10 +106,10 @@
           <button class="btn btn-secondary btn-sm" type="button"
                   data-save-btn data-doc-id="{{ doc.id }}"
                   aria-pressed="{{ 'true' if is_saved else 'false' }}">
-            <span data-save-icon>{{ '★' if is_saved else '☆' }}</span>
+            <svg class="icon{% if is_saved %} icon--filled{% endif %}" data-save-icon aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-star"></use></svg>
             <span data-save-label>{{ 'Saved' if is_saved else 'Save' }}</span>
           </button>
-          <button class="btn btn-ghost btn-sm" type="button" data-report-btn data-doc-id="{{ doc.id }}">Report</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-report-btn data-doc-id="{{ doc.id }}">{{ ui.icon('flag') }} Report</button>
         </div>
       </div>
     </footer>

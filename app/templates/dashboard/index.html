@@ -13,7 +13,9 @@
   <div class="app-main fade-in">
     <div class="page-head">
       <div>
-        <h1 class="page-head__title">Welcome back, {{ current_user.effective_name }} 👋</h1>
+        <h1 class="page-head__title">Welcome back, {{ current_user.effective_name }}
+          <svg class="icon icon-welcome" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-sparkles"></use></svg>
+        </h1>
         <p class="page-head__subtitle">Here's how your documents are doing.</p>
       </div>
       <a class="btn btn-primary" href="{{ url_for('docs.create') }}">+ New Document</a>

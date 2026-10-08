@@ -98,3 +98,11 @@
 .thread-reply .field:last-of-type { margin-bottom: var(--space-3); }
 
 .app-main { min-width: 0; }
+
+/* Greeting icon in the dashboard heading */
+.icon-welcome {
+  width: 0.9em;
+  height: 0.9em;
+  color: var(--primary);
+  vertical-align: -0.05em;
+}

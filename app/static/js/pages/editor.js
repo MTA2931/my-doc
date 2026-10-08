@@ -214,7 +214,7 @@
         addViewLink(data.doc.slug);
       }
       dirty = false;
-      MyDoc.toast(status === 'published' ? 'Published! 🎉' : 'Draft saved.', 'success');
+      MyDoc.toast(status === 'published' ? 'Published!' : 'Draft saved.', 'success');
       return data;
     } catch (err) {
       showErrors(err.data && err.data.errors);
@@ -244,7 +244,9 @@
     link.target = '_blank';
     link.rel = 'noopener';
     link.setAttribute('data-view-link', '');
-    link.textContent = 'View ↗';
+    link.innerHTML =
+      'View <svg class="icon" aria-hidden="true" focusable="false">' +
+      '<use href="/static/vendor/lucide-sprite.svg#i-arrow-up-right"></use></svg>';
     topbar.insertBefore(link, autosaveEl);
   }
 

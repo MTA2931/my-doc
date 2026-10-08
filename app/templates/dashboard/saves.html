@@ -41,7 +41,10 @@
             <span class="doc-card__author">{{ doc.author.effective_name }}</span>
             <span class="doc-card__stats">
               <button class="btn btn-ghost btn-sm" type="button"
-                      data-save-btn data-doc-id="{{ doc.id }}">★ Saved</button>
+                      data-save-btn data-doc-id="{{ doc.id }}">
+                <svg class="icon icon--filled" data-save-icon aria-hidden="true" focusable="false"><use href="/static/vendor/lucide-sprite.svg#i-star"></use></svg>
+                <span data-save-label>Saved</span>
+              </button>
             </span>
           </div>
         </div>
@@ -58,7 +61,7 @@
         </svg>
       </div>
       <h3>No saves yet</h3>
-      <p>Tap the ★ Save button on any document and it will show up here.</p>
+      <p>Tap the Save button on any document and it will show up here.</p>
       <a class="btn btn-primary" href="{{ url_for('main.home') }}">Browse the feed</a>
     </div>
     {% endif %}
