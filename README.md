@@ -81,18 +81,6 @@ intelligence and the digital world**.
 - Security headers: CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy
 - Role-based access control enforced **server-side** (`@role_required` / capability matrix)
 
-## Screenshots
-
-> Replace with your own captures after running the app locally.
-
-| Landing (3D hero) | Feed | Editor |
-|---|---|---|
-| ![Landing](docs/screenshots/landing.png) | ![Feed](docs/screenshots/feed.png) | ![Editor](docs/screenshots/editor.png) |
-
-| Dashboard | Admin panel | Dark theme |
-|---|---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Admin](docs/screenshots/admin.png) | ![Dark](docs/screenshots/dark.png) |
-
 ## Tech stack
 
 | Layer | Choice |
