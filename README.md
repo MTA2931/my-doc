@@ -310,7 +310,7 @@ Distributed under the **MIT License** — see [LICENSE](LICENSE) for details.
 
 **Developed by MTA Company**
 
-© 2026 MyDoc · MIT License · Built with Flask & vanilla JS
+Copyright 2026 MyDoc · MIT License · Built with Flask & vanilla JS
 
 </div>
 
